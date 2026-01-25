@@ -1,5 +1,5 @@
 const RECAPTCHA_SITE_KEY = '6LfqiPsrAAAAALjpHfrlYQ-bhYykrv0DDSqKQETq';
-const STYTCH_PUBLIC_TOKEN = '';
+const STYTCH_PUBLIC_TOKEN = 'public-token-test-4aad8ed4-1567-4800-a97d-a839fdc9a799';
 
 // --- Keystroke Tracking ---
 let keystrokeData = [];
