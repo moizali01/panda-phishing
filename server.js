@@ -18,12 +18,13 @@ dotenv.config();
 /* App Variables */
 const app = express();
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+const CLOUDFLARE_SECRET_KEY = process.env.CLOUDFLARE_SECRET_KEY;
 
 // Adjust the limit for json req/resp to accommodate larger fingerprints
 app.use(bodyParser.json({limit:'10mb'}));
 
 // enabling CORS for any unknown origin(https://xyz.example.com)
-app.use(cors());
+app.use(cors("https://gawalmandi.xyz"));
 
 // For JSON POST requests
 app.use(express.json());
@@ -52,6 +53,20 @@ async function verifyRecaptcha(token) {
     }
 }
 
+async function verifyTurnstile(token) {
+    const formData = new URLSearchParams();
+    formData.append('secret', CLOUDFLARE_SECRET_KEY);
+    formData.append('response', token);
+
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body: formData,
+    });
+
+    const data = await response.json();
+    return data;
+}
+
 
 app.get("/", function (request, res) {
     res.sendFile(path.join(__dirname, 'main.html'));
@@ -59,6 +74,7 @@ app.get("/", function (request, res) {
 app.get("/main.css", function (request, res) {
     res.sendFile(path.join(__dirname, 'main.css'));
 });
+
 app.get("/keystroke.js", function (request, res) {
     res.sendFile(path.join(__dirname, 'keystroke.js'));
 });
@@ -67,36 +83,68 @@ app.get("/downloadHTML.js", function (request, res) {
     res.sendFile(path.join(__dirname, 'downloadHTML.js'));
 });
 
+// stytch isagent
+app.get("/isagent-bundle.js", function (request, res) {
+    res.sendFile(path.join(__dirname, 'isagent-bundle.js'));
+});
+
+// add product pages
+app.get("/product1", function (request, res) {
+    res.sendFile(path.join(__dirname, 'shopping/product1.html'));
+});
+app.get("/product2", function (request, res) {
+    res.sendFile(path.join(__dirname, 'shopping/product2.html'));
+});
+app.get("/product3", function (request, res) {
+    res.sendFile(path.join(__dirname, 'shopping/product3.html'));
+});
+app.get("/styles.css", function (request, res) {
+    res.sendFile(path.join(__dirname, 'shopping/styles.css'));
+});
+
 // This route handles the form submission
-app.post("/analyze", async (req, res) => { // <-- Make the route 'async'
+app.post("/analyze", async (req, res) => { 
     console.log("--- FORM DATA RECEIVED ---");
     
     // Extract the token from the request body
     const { recaptchaToken } = req.body;
 
-    // Log the full payload (excluding the token for brevity if you want)
-    console.log(JSON.stringify(req.body, null, 2));
+    // console.log(recaptchaToken);
     
     // --- Verify the token ---
     const recaptchaResult = await verifyRecaptcha(recaptchaToken);
     
+    // const turnstileResult = await verifyTurnstile(req.body.turnstileToken);
+    // dummy turnstile
+    const turnstileResult = { success: true };
+
     console.log("--- RECAPTCHA RESULT ---");
     console.log(recaptchaResult);
     console.log("------------------------");
 
+    console.log("--- TURNSTILE RESULT ---");
+    console.log(turnstileResult);
+    console.log("------------------------");
+    
     // Check if verification was successful and the score is above your threshold
-    if (recaptchaResult.success && recaptchaResult.score >= 0.5) {
-        // Human
+    const isHuman = (
+        recaptchaResult.success && 
+        recaptchaResult.score >= 0.5 && 
+        turnstileResult.success // <--- Check Turnstile result
+    );
+
+    if (isHuman) {
         res.json({
             report: "Data received and user verified as human.",
             recaptcha_score: recaptchaResult.score,
-            data: req.body // You can send back the data if needed
+            turnstile_success: true,
+            data: req.body 
         });
     } else {
-        // Bot or error
         res.json({
-            report: "User verification failed. Likely a bot.",
+            report: "User verification failed.",
             recaptcha_score: recaptchaResult.score,
+            turnstile_success: turnstileResult.success,
             'error-codes': recaptchaResult['error-codes']
         });
     }
@@ -109,6 +157,7 @@ app.post("/analyze", async (req, res) => { // <-- Make the route 'async'
 
 // var httpServer = http.createServer(credentials, app);
 var httpServer = http.createServer(app);
-httpServer.listen(5001, () => { 
+PORT = process.env.PORT || 5001;
+httpServer.listen(PORT, () => { 
     console.log("HTTP server running on port 5001");
 });

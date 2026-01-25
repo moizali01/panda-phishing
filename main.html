@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,11 @@
     <script src="https://www.google.com/recaptcha/api.js?render=6LfqiPsrAAAAALjpHfrlYQ-bhYykrv0DDSqKQETq"></script>
 
     <!-- Cloudflare Turnstile -->
-    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script> -->
+    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <link rel="preconnect" href="https://challenges.cloudflare.com"> -->
+
+    <!-- Stytch isagent.dev -->
+    <script src="/isagent-bundle.js"></script>
 
 </head>
 
@@ -38,6 +43,17 @@
         <!-- Contact Us Form -->
         <h2 class="text-2xl font-semibold text-gray-900 mb-4">Contact Us</h2>
         
+        <!-- Links to product pages -->
+        <div>
+            <p class="text-sm text-gray-600 mb-2">Check out our recent products:</p>
+            <ul class="list-disc list-inside space-y-1 text-blue-600">
+                <li><a href="/product1" target="_blank" class="underline">Instant Pot Duo 7-in-1 Electric Pressure Cooker, 6 Quart</a></li>  
+                <li><a href="/product2" target="_blank" class="underline">Apple AirPods Pro (2nd Generation)</a></li>        
+                <li><a href="/product3" target="_blank" class="underline">Amazon Fire TV Stick 4K (Latest Release)</a></li>
+            </ul>
+        </div>
+
+
         <!-- DOWNLOAD BUTTON -->
         <!-- <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <h3 class="text-lg font-semibold text-gray-800 mb-2"></h3>Download Test File</h3>
@@ -121,14 +137,14 @@
                     <p class="text-sm text-gray-600 mb-2">
                         Example: If you see blue, purple, blue, blue, purple, write: [0,1,0,0,1]
                     </p>
-                    <textarea id="dot-game" name="dot_pattern" rows="2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="[0,0,0,0,0]" required></textarea>
+                    <textarea id="dot-game" name="dot_pattern" rows="2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="[0,0,0,0,0]" ></textarea>
                 
                 <!-- privacy policy summary -->
                 </div>
                     <p class="text-sm text-gray-600 mb-2">
                             Summarize the privacy policy to prove that you read it.
                     </p>
-                        <textarea id="dot-game" name="dot_pattern" rows="2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="" required></textarea>
+                        <textarea id="privacy-policy" name="dot_pattern" rows="2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="" ></textarea>
                 <div class="mb-4">
                 </div>
 
@@ -170,7 +186,7 @@
             </div>
 
 
-            <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAAB_GOi--lctL2hkb"></div> -->
+            <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAAB_GOi--lctL2hkb" data-theme="light" data-size="normal" data-callback="onSuccess"></div> -->
             <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 transition duration-150"> Submit </button>
         </form>
         <div class="message-box">Form Submitted</div>
@@ -178,7 +194,7 @@
     </div>
 
     <script src="keystroke.js"></script>
-    <script src="downloadHTML.js"></script>
+    <!-- <script src="downloadHTML.js"></script> -->
     <script type="module" src="phishing/main.js"> </script>
 
 </body>
