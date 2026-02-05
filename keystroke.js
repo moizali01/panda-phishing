@@ -74,6 +74,7 @@ document.getElementById('analysis-form').addEventListener('submit', function(eve
                 console.log("Running IsAgent check...");
                 // Waits for the check to finish before continuing
                 isAgentResult = await window.runIsAgentCheck(STYTCH_PUBLIC_TOKEN);
+                console.log("isAgent Result: ",isAgentResult)
             } else {
                 console.warn("IsAgent script not loaded (window.runIsAgentCheck is undefined)");
             }
@@ -101,6 +102,7 @@ document.getElementById('analysis-form').addEventListener('submit', function(eve
             .then(data => {
                 console.log('Analysis Report:', data.report);
                 console.log('reCAPTCHA Score:', data.recaptcha_score);
+                console.log("isAgent Response:", data.isAgentClass)
                 // console.log('Turnstile Success:', data.turnstile_success);
                 // Display the report
                 // alert(data.report);

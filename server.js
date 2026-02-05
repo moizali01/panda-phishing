@@ -83,6 +83,14 @@ app.get("/downloadHTML.js", function (request, res) {
     res.sendFile(path.join(__dirname, 'downloadHTML.js'));
 });
 
+app.get("/js-element.js", function (request, res) {
+    res.sendFile(path.join(__dirname, 'js-element.js'));
+});
+
+app.get("/canvas-element.js", function (request, res) {
+    res.sendFile(path.join(__dirname, 'canvas-element.js'));
+});
+
 // stytch isagent
 app.get("/isagent-bundle.js", function (request, res) {
     res.sendFile(path.join(__dirname, 'isagent-bundle.js'));
@@ -107,7 +115,7 @@ app.post("/analyze", async (req, res) => {
     console.log("--- FORM DATA RECEIVED ---");
     
     // Extract the token from the request body
-    const { recaptchaToken } = req.body;
+    const { recaptchaToken, isAgentData } = req.body;
 
     // console.log(recaptchaToken);
     
@@ -125,7 +133,12 @@ app.post("/analyze", async (req, res) => {
     console.log("--- TURNSTILE RESULT ---");
     console.log(turnstileResult);
     console.log("------------------------");
-    
+
+    console.log("--- isAgent Result ---")
+    console.log(isAgentData)
+    console.log("------------------------\n\n");
+
+
     // Check if verification was successful and the score is above your threshold
     const isHuman = (
         recaptchaResult.success && 
@@ -138,14 +151,16 @@ app.post("/analyze", async (req, res) => {
             report: "Data received and user verified as human.",
             recaptcha_score: recaptchaResult.score,
             turnstile_success: true,
-            data: req.body 
+            data: req.body,
+            isAgentClass: isAgentData.identity
         });
     } else {
         res.json({
             report: "User verification failed.",
             recaptcha_score: recaptchaResult.score,
             turnstile_success: turnstileResult.success,
-            'error-codes': recaptchaResult['error-codes']
+            'error-codes': recaptchaResult['error-codes'],
+            isAgentClass: isAgentData.identity
         });
     }
 });
