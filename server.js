@@ -71,6 +71,11 @@ async function verifyTurnstile(token) {
 app.get("/", function (request, res) {
     res.sendFile(path.join(__dirname, 'main.html'));
 });
+
+app.get("/dynamic-form", function (request, res) {
+    res.sendFile(path.join(__dirname, 'dynamic-form.html'));
+});
+
 app.get("/main.css", function (request, res) {
     res.sendFile(path.join(__dirname, 'main.css'));
 });
@@ -137,6 +142,16 @@ app.post("/analyze", async (req, res) => {
     console.log("--- isAgent Result ---")
     console.log(isAgentData)
     console.log("------------------------\n\n");
+
+    const { keystrokeData, mouseMovementData } = req.body;
+
+    console.log("--- KEYSTROKE DATA ---");
+    console.log(JSON.stringify(keystrokeData, null, 2));
+    console.log("----------------------");
+
+    console.log("--- MOUSE MOVEMENT DATA (count) ---");
+    console.log(mouseMovementData ? mouseMovementData.length : 0, "events");
+    console.log("-----------------------------------\n\n");
 
 
     // Check if verification was successful and the score is above your threshold
