@@ -7,15 +7,35 @@
     <title>Panda Conservation Registration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="main.css">
+    <script src="tracker-dynamic.js" defer></script>
+
     <style>
         /* Smooth reveal animation for dynamic fields */
         .reveal-field {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .reveal-field.visible {
+            position: relative;
+            width: auto;
+            height: auto;
+            overflow: visible;
+            pointer-events: auto;
+            animation: fadeSlideIn 0.35s ease forwards;
+        }
+
+        /* .reveal-field {
             display: none;
             animation: fadeSlideIn 0.35s ease forwards;
         }
         .reveal-field.visible {
             display: block;
-        }
+        } */
+        
         @keyframes fadeSlideIn {
             from { opacity: 0; transform: translateY(-8px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -57,28 +77,27 @@
         <span class="step-dot" id="dot-8"></span>
     </div>
 
-    <form id="dynamic-form" novalidate>
+    <form id="dynamic-form">
 
         <!-- ── STEP 1: Full name ─────────────────────────────────── -->
         <div class="mb-5">
             <label for="full-name" class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
-            <input type="text" id="full-name" name="full_name" autocomplete="name"
-                   class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                   placeholder="Jane Doe">
+            <input type="text" id="full-name" name="full_name"
+                   class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required placeholder="Jane Doe">
         </div>
 
         <!-- ── STEP 2: Email (revealed after name is typed) ──────── -->
         <div class="reveal-field mb-5" id="field-email">
             <label for="email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label>
-            <input type="email" id="email" name="email" autocomplete="email"
+            <input type="email" id="email" name="email"
                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                   placeholder="jane@example.com">
+                   placeholder="jane@example.com" autocomplete="email" required>
         </div>
 
         <!-- ── STEP 3: Country (revealed after email is typed) ────── -->
         <div class="reveal-field mb-5" id="field-country">
             <label for="country" class="block text-sm font-medium text-gray-700">Country of Residence <span class="text-red-500">*</span></label>
-            <select id="country" name="country"
+            <select id="country" name="country" required
                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
                 <option value="">— Select a country —</option>
                 <option value="US">United States</option>
@@ -122,7 +141,7 @@
         <!-- ── STEP 3a-i: US City (only after state chosen) ─────── -->
         <div class="reveal-field mb-5" id="field-us-city">
             <label for="us-city" class="block text-sm font-medium text-gray-700">City</label>
-            <input type="text" id="us-city" name="us_city" autocomplete="address-level2"
+            <input type="text" id="us-city" name="us_city"
                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                    placeholder="Enter your city">
         </div>
@@ -273,7 +292,7 @@
             </div>
             <div class="mt-3">
                 <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input type="tel" id="phone" name="phone" autocomplete="tel"
+                <input type="tel" id="phone" name="phone"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                        placeholder="+1 (555) 000-0000">
             </div>
@@ -341,10 +360,10 @@
 
         <!-- ── STEP 8: Additional comments (revealed near the end) ── -->
         <div class="reveal-field mb-6" id="field-comments">
-            <label for="comments" class="block text-sm font-medium text-gray-700">Any additional comments or questions?</label>
-            <textarea id="comments" name="comments" rows="3"
+            <label for="comments" class="block text-sm font-medium text-gray-700">Any additional comments or questions? <span class="text-red-500">*</span></label>
+            <textarea id="comments" name="comments" rows="3" required
                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Optional — tell us anything else you'd like us to know."></textarea>
+                      placeholder="Tell us anything else you'd like us to know."></textarea>
         </div>
 
         <!-- Submit button (always at the bottom, enabled only when enough is filled) -->
@@ -364,13 +383,69 @@
 
 <script>
 /* ────────────────────────────────────────────────────────────────
+   Reveal-timing instrumentation
+   ─ revealTimes : { fieldId → epoch ms when field became visible }
+   ─ reactionLog : array of reaction entries sent to /log-interaction
+   ─ reactedFields : set of fieldIds already recorded (one entry each)
+──────────────────────────────────────────────────────────────── */
+const revealTimes   = {};
+const reactionLog   = [];
+const reactedFields = new Set();
+const SESSION_ID    = Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+
+/**
+ * After a field is revealed, attach one-shot listeners to every
+ * interactive element inside it.  The first event fired records the
+ * reaction delay for that field.
+ */
+function attachReactionListeners(fieldId) {
+    const container = document.getElementById(fieldId);
+    if (!container) return;
+
+    const targets = container.querySelectorAll('input, select, textarea, button');
+    const EVENTS  = ['focus', 'mousedown', 'touchstart', 'change', 'input'];
+
+    function onFirstInteraction(e) {
+        if (reactedFields.has(fieldId)) return;   // already logged
+        reactedFields.add(fieldId);
+
+        const now        = Date.now();
+        const revealedAt = revealTimes[fieldId];
+        const entry = {
+            sessionId      : SESSION_ID,
+            fieldId        : fieldId,
+            revealedAt     : revealedAt,
+            firstInteractAt: now,
+            reactionMs     : now - revealedAt,
+            eventType      : e.type,
+            triggerElement : e.target.tagName + (e.target.id ? '#' + e.target.id : ''),
+            isTrusted      : e.isTrusted
+        };
+        reactionLog.push(entry);
+        console.log('[reaction]', entry.fieldId, entry.reactionMs + 'ms', '('+entry.eventType+')');
+
+        // clean up listeners
+        targets.forEach(t =>
+            EVENTS.forEach(ev => t.removeEventListener(ev, onFirstInteraction))
+        );
+    }
+
+    targets.forEach(t =>
+        EVENTS.forEach(ev => t.addEventListener(ev, onFirstInteraction, { passive: true }))
+    );
+}
+
+/* ────────────────────────────────────────────────────────────────
    Helpers
 ──────────────────────────────────────────────────────────────── */
 function show(id) {
     const el = document.getElementById(id);
     if (!el) return;
     if (!el.classList.contains('visible')) {
+        revealTimes[id] = Date.now();   // ← stamp reveal time
         el.classList.add('visible');
+        // el.querySelectorAll('input, select, textarea, button').forEach(n => n.disabled = false);
+        attachReactionListeners(id);    // ← start watching
         updateProgress();
     }
 }
@@ -378,8 +453,19 @@ function hide(id) {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('visible');
+    // el.querySelectorAll('input, select, textarea, button').forEach(n => n.disabled = true);
+    // If re-revealed later, allow a fresh measurement
+    delete revealTimes[id];
+    reactedFields.delete(id);
     updateProgress();
 }
+
+// // Ensure initially hidden fields have disabled inputs so they don't block form submission
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.querySelectorAll('.reveal-field:not(.visible)').forEach(el => {
+//         el.querySelectorAll('input, select, textarea, button').forEach(n => n.disabled = true);
+//     });
+// });
 
 /* Count visible reveal-fields and light up progress dots */
 function updateProgress() {
@@ -481,16 +567,70 @@ document.getElementById('newsletter').addEventListener('change', function () {
     else              { hide('field-newsletter-freq'); }
 });
 
-/* ────────────────────────────────────────────────────────────────
-   Form submission
-──────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────
+   Form submission → also ships the reaction log to the server.
+   Also flushes on tab-hide / page-close for autofill-only runs
+   that never submit.
+────────────────────────────────────────────────────────────── */
+let logSent = false;
+
+function buildPayload() {
+    const delays = reactionLog.map(r => r.reactionMs);
+    const summary = delays.length ? {
+        count   : delays.length,
+        minMs   : Math.min(...delays),
+        maxMs   : Math.max(...delays),
+        meanMs  : Math.round(delays.reduce((a, b) => a + b, 0) / delays.length),
+        medianMs: delays.slice().sort((a, b) => a - b)[Math.floor(delays.length / 2)]
+    } : null;
+
+    return {
+        sessionId  : SESSION_ID,
+        submittedAt: Date.now(),
+        userAgent  : navigator.userAgent,
+        formType   : 'dynamic-form',
+        summary,
+        reactions  : reactionLog
+    };
+}
+
+function sendLog(useBeacon) {
+    if (logSent || reactionLog.length === 0) return;
+    logSent = true;
+
+    const payload = buildPayload();
+    const body = JSON.stringify(payload);
+    console.log('[reaction log]', payload);
+
+    if (useBeacon && navigator.sendBeacon) {
+        navigator.sendBeacon('/log-interaction', new Blob([body], { type: 'application/json' }));
+    } else {
+        fetch('/log-interaction', {
+            method : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body
+        }).catch(err => console.warn('log-interaction failed:', err));
+    }
+}
+
 document.getElementById('dynamic-form').addEventListener('submit', function (e) {
     e.preventDefault();
+    sendLog(false);
     this.style.display = 'none';
     document.getElementById('success-msg').classList.remove('hidden');
     document.getElementById('progress-dots').style.display = 'none';
 });
+
+window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') sendLog(true);
+});
+window.addEventListener('pagehide', () => sendLog(true));
+
+
+
 </script>
+
 
 </body>
 </html>
+<!-- MDN Web Docs. (2026). MutationObserver. [online] Available at: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver.Mozilla.org. (2025). DOM events - Web APIs | MDN. [online] Available at: https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events. -->

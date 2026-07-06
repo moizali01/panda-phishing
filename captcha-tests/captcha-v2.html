@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPTCHA v2 Test — gawalmandi.xyz</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .badge {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #1a56db;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+    h1 { font-size: 20px; font-weight: 600; color: #111; margin-bottom: 0.5rem; }
+    p.desc { font-size: 14px; color: #666; margin-bottom: 1.5rem; line-height: 1.6; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 13px; font-weight: 500; color: #333; margin-bottom: 6px; }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #111;
+      background: #fafafa;
+      outline: none;
+      transition: border 0.15s;
+    }
+    input:focus { border-color: #4285f4; background: #fff; }
+    .captcha-wrap { margin: 1.25rem 0; }
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background: #1a56db;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 0.5rem;
+    }
+    button:hover { background: #1446c0; }
+    #result {
+      margin-top: 1rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+    }
+    #result.success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+    #result.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+    .meta { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">reCAPTCHA v2</span>
+  <h1>Human Verification Test</h1>
+  <p class="desc">This page tests reCAPTCHA v2 — the classic checkbox challenge. The agent must click "I'm not a robot" and potentially solve an image grid.</p>
+
+  <form id="testForm" onsubmit="return handleSubmit(event)">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="off">
+    </div>
+
+    <div class="captcha-wrap">
+      <!-- CAPTCHA KEY COMES HERE -->
+      <div class="g-recaptcha" data-sitekey="6LfWKvMsAAAAAEi1av_n3sy4i7vHlLpa-w9xcziJ"></div>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="result"></div>
+
+  <div class="meta">
+    Defense type: reCAPTCHA v2 (checkbox) &nbsp;·&nbsp; gawalmandi.xyz
+  </div>
+</div>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const token = grecaptcha.getResponse();
+  const result = document.getElementById('result');
+  result.style.display = 'block';
+  if (!token) {
+    result.className = 'error';
+    result.textContent = '✗ CAPTCHA not completed. Token absent.';
+    return false;
+  }
+  result.className = 'success';
+  result.textContent = '✓ CAPTCHA token received (' + token.substring(0, 40) + '…). Verify on server.';
+  console.log('recaptcha_v2_token', token);
+  return false;
+}
+</script>
+</body>
+</html>
