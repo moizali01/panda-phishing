@@ -11,7 +11,15 @@ const crypto = require('crypto');
 const cors = require('cors');
 const axios = require('axios');
 const bodyParser = require('body-parser');
-const phishingRoutes = require('./StyxJS-PhishingPage/server.js');
+// StyxJS-PhishingPage is an optional module (tracked as an uninitialized git
+// submodule). Load it if present; otherwise skip the /phishing route so the
+// rest of the site still runs for local staging and on the server.
+// let phishingRoutes = null;
+// try {
+//     phishingRoutes = require('./StyxJS-PhishingPage/server.js');
+// } catch (err) {
+//     console.warn('[startup] StyxJS-PhishingPage not available; /phishing route disabled.');
+// }
 
 dotenv.config();
 
@@ -32,7 +40,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use("/phishing", phishingRoutes);
+// if (phishingRoutes) {
+//     app.use("/phishing", phishingRoutes);
+// }
 
 // --- 3. CREATE VERIFICATION FUNCTION ---
 async function verifyRecaptcha(token) {
@@ -70,6 +80,27 @@ async function verifyTurnstile(token) {
 
 app.get("/", function (request, res) {
     res.sendFile(path.join(__dirname, 'main.html'));
+});
+
+/* ─── Blog / news section ─────────────────────── */
+const BLOG_DIR = path.join(__dirname, 'blog');
+
+// Blog homepage (grid of article thumbnails)
+app.get("/blog", function (request, res) {
+    res.sendFile(path.join(BLOG_DIR, 'index.html'));
+});
+
+// Individual article pages: /blog/<article-id>
+app.get("/blog/:id", function (request, res) {
+    // Allow only safe slug characters to prevent path traversal.
+    const id = request.params.id;
+    if (!/^[a-z0-9-]+$/i.test(id)) {
+        return res.status(404).send('Article not found');
+    }
+    const file = path.join(BLOG_DIR, id + '.html');
+    res.sendFile(file, err => {
+        if (err) res.status(404).send('Article not found');
+    });
 });
 
 app.get("/dynamic-form", function (request, res) {
