@@ -90,6 +90,38 @@ app.get("/blog", function (request, res) {
     res.sendFile(path.join(BLOG_DIR, 'index.html'));
 });
 
+// Newsletter signup page (declared before /blog/:id so it is not treated as an article)
+app.get("/blog/signup", function (request, res) {
+    res.sendFile(path.join(BLOG_DIR, 'signup.html'));
+});
+
+// Store a newsletter signup (name, email, dob, country, topic ranking)
+const SUBSCRIBERS_LOG_FILE = path.join(__dirname, 'logs', 'subscribers.jsonl');
+app.post("/subscribe", function (req, res) {
+    const { fullName, email, dob } = req.body || {};
+    if (!fullName || !email || !dob) {
+        return res.status(400).json({ ok: false, error: 'Missing required fields.' });
+    }
+    const entry = {
+        ...req.body,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(SUBSCRIBERS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) {
+            console.error('Failed to write subscriber log:', err.message);
+            return res.status(500).json({ ok: false });
+        }
+        console.log('--- NEW SUBSCRIBER ---');
+        console.log('Name :', entry.fullName, '| Email:', entry.email);
+        if (Array.isArray(entry.ranking)) {
+            console.log('Ranking:', entry.ranking.map(r => `${r.rank}. ${r.topic}`).join('  '));
+        }
+        console.log('----------------------\n');
+        res.json({ ok: true });
+    });
+});
+
 // Individual article pages: /blog/<article-id>
 app.get("/blog/:id", function (request, res) {
     // Allow only safe slug characters to prevent path traversal.
