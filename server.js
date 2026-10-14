@@ -114,8 +114,8 @@ app.post("/subscribe", function (req, res) {
         }
         console.log('--- NEW SUBSCRIBER ---');
         console.log('Name :', entry.fullName, '| Email:', entry.email);
-        if (Array.isArray(entry.ranking)) {
-            console.log('Ranking:', entry.ranking.map(r => `${r.rank}. ${r.topic}`).join('  '));
+        if (entry.preference) {
+            console.log('Preference:', entry.preference);
         }
         console.log('----------------------\n');
         res.json({ ok: true });

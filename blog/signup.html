@@ -54,55 +54,47 @@
                         class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 </div>
 
-                <!-- Preference ranking -->
+                <!-- Preference: single choice -->
                 <div class="pt-4 border-t border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-1">What would you like to read most?</h2>
-                    <p class="text-sm text-gray-500 mb-4">
-                        Rank these from <strong>1</strong> (most interested) to <strong>4</strong> (least interested).
-                        Use each number once.
-                    </p>
+                    <p class="text-sm text-gray-500 mb-4">Choose the one topic you're most interested in.</p>
 
-                    <div id="ranking" class="space-y-3">
-                        <!-- rows injected below; data kept here for clarity -->
-                        <div class="rank-row flex items-center gap-3 bg-gray-50 rounded-md p-3" data-topic="Giant Pandas">
-                            <input type="number" min="1" max="4" inputmode="numeric"
-                                class="rank-input w-14 text-center rounded-md border border-gray-300 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                aria-label="Rank for Giant Pandas article">
+                    <div id="preference" class="space-y-3">
+                        <label class="pref-row flex items-center gap-3 bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 has-[:checked]:ring-2 has-[:checked]:ring-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="preference" value="Giant Pandas"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500">
                             <div>
                                 <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full">Giant Pandas</span>
                                 <p class="text-sm text-gray-800 mt-1">Why Giant Pandas Eat Bamboo Almost Exclusively</p>
                             </div>
-                        </div>
+                        </label>
 
-                        <div class="rank-row flex items-center gap-3 bg-gray-50 rounded-md p-3" data-topic="Football">
-                            <input type="number" min="1" max="4" inputmode="numeric"
-                                class="rank-input w-14 text-center rounded-md border border-gray-300 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                aria-label="Rank for Football article">
+                        <label class="pref-row flex items-center gap-3 bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 has-[:checked]:ring-2 has-[:checked]:ring-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="preference" value="Football"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500">
                             <div>
                                 <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full">Football</span>
                                 <p class="text-sm text-gray-800 mt-1">Every FIFA World Cup Winner and the Eras They Defined</p>
                             </div>
-                        </div>
+                        </label>
 
-                        <div class="rank-row flex items-center gap-3 bg-gray-50 rounded-md p-3" data-topic="Medical Awareness">
-                            <input type="number" min="1" max="4" inputmode="numeric"
-                                class="rank-input w-14 text-center rounded-md border border-gray-300 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                aria-label="Rank for Medical Awareness article">
+                        <label class="pref-row flex items-center gap-3 bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 has-[:checked]:ring-2 has-[:checked]:ring-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="preference" value="Medical Awareness"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500">
                             <div>
                                 <span class="inline-block bg-rose-100 text-rose-800 text-xs font-semibold px-2 py-0.5 rounded-full">Medical Awareness</span>
                                 <p class="text-sm text-gray-800 mt-1">Understanding Diabetes: Types, Warning Signs, and Daily Management</p>
                             </div>
-                        </div>
+                        </label>
 
-                        <div class="rank-row flex items-center gap-3 bg-gray-50 rounded-md p-3" data-topic="Basketball">
-                            <input type="number" min="1" max="4" inputmode="numeric"
-                                class="rank-input w-14 text-center rounded-md border border-gray-300 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                aria-label="Rank for Basketball article">
+                        <label class="pref-row flex items-center gap-3 bg-gray-50 rounded-md p-3 cursor-pointer hover:bg-gray-100 has-[:checked]:ring-2 has-[:checked]:ring-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="preference" value="Basketball"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500">
                             <div>
                                 <span class="inline-block bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded-full">Basketball</span>
                                 <p class="text-sm text-gray-800 mt-1">The State of the NBA: Storylines Shaping the Season</p>
                             </div>
-                        </div>
+                        </label>
                     </div>
                 </div>
 
@@ -152,27 +144,14 @@
                 return showError('Please fill in your name, email, and date of birth.');
             }
 
-            // Collect and validate rankings: each 1..4, used exactly once.
-            const rows = [...document.querySelectorAll('.rank-row')];
-            const ranking = [];
-            const seen = new Set();
-            for (const row of rows) {
-                const val = row.querySelector('.rank-input').value.trim();
-                const n = Number(val);
-                if (!val || !Number.isInteger(n) || n < 1 || n > rows.length) {
-                    return showError('Please rank every topic with a number from 1 to ' + rows.length + '.');
-                }
-                if (seen.has(n)) {
-                    return showError('Each rank number must be used only once.');
-                }
-                seen.add(n);
-                ranking.push({ topic: row.dataset.topic, rank: n });
+            // Collect the single selected preference.
+            const selected = document.querySelector('input[name="preference"]:checked');
+            if (!selected) {
+                return showError('Please choose the topic you are most interested in.');
             }
+            const preference = selected.value;
 
-            // Sort by rank so the server receives a clean ordered preference list.
-            ranking.sort((a, b) => a.rank - b.rank);
-
-            const payload = { fullName, email, dob, country, ranking, submittedAt: Date.now() };
+            const payload = { fullName, email, dob, country, preference, submittedAt: Date.now() };
 
             try {
                 const res = await fetch('/subscribe', {
