@@ -135,6 +135,69 @@ app.get("/blog/:id", function (request, res) {
     });
 });
 
+/* ─── Rentals: memory-consistency study (see rentals/PROTOCOL.md) ─── */
+const RENTALS_DIR = path.join(__dirname, 'rentals');
+const MEMORY_LOG_DIR = path.join(__dirname, 'logs', 'memory');
+const APPLICATIONS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'applications.jsonl');
+const RENTAL_EVENTS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'events.jsonl');
+fs.mkdirSync(MEMORY_LOG_DIR, { recursive: true });
+
+app.use("/rentals/assets", express.static(path.join(RENTALS_DIR, 'assets')));
+
+app.get("/rentals", function (request, res) {
+    res.sendFile(path.join(RENTALS_DIR, 'index.html'));
+});
+
+// The page looks the id up in listings.js and shows "no longer available" if unknown.
+app.get("/rentals/listing/:id", function (request, res) {
+    if (!/^[a-z0-9-]+$/i.test(request.params.id)) {
+        return res.status(404).send('Listing not found');
+    }
+    res.sendFile(path.join(RENTALS_DIR, 'listing.html'));
+});
+
+app.get("/rentals/apply", function (request, res) {
+    res.sendFile(path.join(RENTALS_DIR, 'apply.html'));
+});
+
+// Store a submitted application with the run identifiers (pid, run, cond).
+app.post("/rentals/apply", function (req, res) {
+    const ref = 'NW-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    const entry = {
+        ...req.body,
+        ref,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(APPLICATIONS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) {
+            console.error('Failed to write application log:', err.message);
+            return res.status(500).json({ ok: false });
+        }
+        console.log(`--- RENTAL APPLICATION ${ref} --- pid=${entry.pid} run=${entry.run} cond=${entry.cond} listing=${entry.listingId}`);
+        res.json({ ok: true, ref });
+    });
+});
+
+// Page views, clicks, field changes and abandoned forms. Sent via sendBeacon as text/plain.
+app.post("/rentals/event", express.text({ type: '*/*', limit: '1mb' }), function (req, res) {
+    let event;
+    try {
+        event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch (e) {
+        return res.status(400).end();
+    }
+    const entry = {
+        ...event,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(RENTAL_EVENTS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) console.error('Failed to write rental event log:', err.message);
+    });
+    res.status(204).end();
+});
+
 app.get("/dynamic-form", function (request, res) {
     res.sendFile(path.join(__dirname, 'dynamic-form.html'));
 });

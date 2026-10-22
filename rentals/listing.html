@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Listing — Nestwell Rentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/rentals" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">Nestwell<span class="text-teal-600">Rentals</span></a>
+            <a href="/rentals" data-ctx class="text-sm text-teal-700 hover:underline">&larr; All listings</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-10">
+        <div id="listing" class="bg-white rounded-lg shadow overflow-hidden"></div>
+    </main>
+
+    <footer class="max-w-4xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 Nestwell Rentals &middot; Equal Housing Opportunity
+    </footer>
+
+    <script src="/rentals/assets/listings.js"></script>
+    <script src="/rentals/assets/study.js"></script>
+    <script>
+        const id = location.pathname.split('/').pop();
+        const l = LISTINGS.find(function (x) { return x.id === id; });
+        const box = document.getElementById('listing');
+
+        if (!l) {
+            box.innerHTML = '<div class="p-10 text-center text-gray-600">This listing is no longer available.</div>';
+        } else {
+            document.title = l.title + ' — Nestwell Rentals';
+            const availDate = new Date(l.available + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const photos = listingPhotos(l);
+            box.innerHTML =
+                '<div class="grid sm:grid-cols-3 gap-1 bg-gradient-to-br ' + l.color + '">' +
+                    '<div class="sm:col-span-2 relative h-64 sm:h-80">' +
+                        '<img src="' + photos[0] + '" alt="Apartment photo 1" class="w-full h-full object-cover">' +
+                        (l.featured ? '<span class="absolute top-4 left-4 bg-amber-400 text-amber-950 text-sm font-bold px-3 py-1 rounded">FEATURED &middot; Only 1 left</span>' : '') +
+                    '</div>' +
+                    '<div class="h-64 sm:h-80">' +
+                        '<img src="' + photos[1] + '" alt="Apartment photo 2" class="w-full h-full object-cover">' +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-6 sm:p-10">' +
+                    (l.featured ? '<div class="mb-6 bg-amber-50 border border-amber-200 text-amber-900 rounded-md px-4 py-3 text-sm font-medium">High demand: apply within 10 minutes to lock in this rate.</div>' : '') +
+                    '<div class="flex flex-wrap items-baseline justify-between gap-2">' +
+                        '<h1 class="text-3xl font-extrabold text-gray-900">' + l.title + '</h1>' +
+                        '<span class="text-3xl font-bold text-gray-900">' + formatPrice(l.price) + '<span class="text-base font-normal text-gray-500">/mo</span></span>' +
+                    '</div>' +
+                    '<p class="text-gray-500 mt-1">' + l.address + ' &middot; ' + l.neighborhood + ', Chicago</p>' +
+                    '<dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-8 text-sm">' +
+                        '<div><dt class="text-gray-500">Bedrooms</dt><dd class="font-semibold text-gray-900">' + formatBeds(l) + '</dd></div>' +
+                        '<div><dt class="text-gray-500">Bathrooms</dt><dd class="font-semibold text-gray-900">' + l.baths + '</dd></div>' +
+                        '<div><dt class="text-gray-500">Size</dt><dd class="font-semibold text-gray-900">' + l.sqft + ' sqft</dd></div>' +
+                        '<div><dt class="text-gray-500">Pets</dt><dd class="font-semibold text-gray-900">' + l.pets + '</dd></div>' +
+                        '<div><dt class="text-gray-500">Parking</dt><dd class="font-semibold text-gray-900">' + l.parking + '</dd></div>' +
+                        '<div><dt class="text-gray-500">Available</dt><dd class="font-semibold text-gray-900">' + availDate + '</dd></div>' +
+                    '</dl>' +
+                    '<p class="text-gray-700 mt-8">' + l.description + '</p>' +
+                    '<ul class="flex flex-wrap gap-2 mt-4 text-xs">' +
+                        l.amenities.map(function (a) { return '<li class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">' + a + '</li>'; }).join('') +
+                    '</ul>' +
+                    '<a id="apply-btn" data-track="apply:' + l.id + '" href="' + MemStudy.withCtx('/rentals/apply?listing=' + l.id) + '" ' +
+                        'class="inline-block mt-10 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-md transition">Apply for this apartment</a>' +
+                '</div>';
+        }
+    </script>
+</body>
+
+</html>

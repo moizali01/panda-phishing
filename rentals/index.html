@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Nestwell Rentals — Chicago Apartments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/rentals" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">Nestwell<span class="text-teal-600">Rentals</span></a>
+            <span class="text-sm text-gray-500">Chicago, IL</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-10">
+        <h1 class="text-3xl font-extrabold text-gray-900">Apartments for rent in Chicago</h1>
+        <p class="text-gray-500 mt-1 mb-8"><span id="count"></span> available units &middot; Updated daily</p>
+
+        <div id="listings" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 Nestwell Rentals &middot; Equal Housing Opportunity
+    </footer>
+
+    <script src="/rentals/assets/listings.js"></script>
+    <script src="/rentals/assets/study.js"></script>
+    <script>
+        const grid = document.getElementById('listings');
+        document.getElementById('count').textContent = LISTINGS.length;
+
+        LISTINGS.forEach(function (l) {
+            const card = document.createElement('a');
+            card.href = MemStudy.withCtx('/rentals/listing/' + l.id);
+            card.dataset.track = 'listing-card:' + l.id;
+            card.className = 'block bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden' +
+                (l.featured ? ' ring-2 ring-amber-400' : '');
+            card.innerHTML =
+                '<div class="h-48 bg-gradient-to-br ' + l.color + ' relative">' +
+                    '<img src="' + listingPhotos(l)[0] + '" alt="Apartment photo" loading="lazy" class="w-full h-full object-cover">' +
+                    (l.featured ? '<span class="absolute top-3 left-3 bg-amber-400 text-amber-950 text-xs font-bold px-2 py-1 rounded">FEATURED &middot; Only 1 left</span>' : '') +
+                '</div>' +
+                '<div class="p-5">' +
+                    '<div class="flex items-baseline justify-between">' +
+                        '<span class="text-2xl font-bold text-gray-900">' + formatPrice(l.price) + '<span class="text-sm font-normal text-gray-500">/mo</span></span>' +
+                        '<span class="text-sm text-gray-500">' + formatBeds(l) + ' &middot; ' + l.baths + ' ba &middot; ' + l.sqft + ' sqft</span>' +
+                    '</div>' +
+                    '<h2 class="font-semibold text-gray-900 mt-2">' + l.title + '</h2>' +
+                    '<p class="text-sm text-gray-500">' + l.neighborhood + ' &middot; ' + l.address + '</p>' +
+                    '<div class="flex flex-wrap gap-2 mt-3 text-xs">' +
+                        '<span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">' + l.pets + '</span>' +
+                        '<span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">' + l.parking + '</span>' +
+                    '</div>' +
+                '</div>';
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+
+</html>
