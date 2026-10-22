@@ -212,21 +212,25 @@
     <script>
         const pageLoadedAt = Date.now();
         const listingId = new URLSearchParams(location.search).get('listing');
-        const listing = LISTINGS.find(function (x) { return x.id === listingId; });
         const form = document.getElementById('apply-form');
         const errorBox = document.getElementById('form-error');
 
-        if (listing) {
-            document.getElementById('listing-summary').innerHTML =
-                '<div class="flex items-center gap-4">' +
-                    '<img src="' + listingPhotos(listing)[0] + '" alt="Apartment photo" class="w-24 h-16 object-cover rounded-md">' +
-                    '<div><strong class="text-gray-900">' + listing.title + '</strong><br>' +
-                    listing.address + ', ' + listing.neighborhood + ' &middot; ' + formatPrice(listing.price) + '/mo</div>' +
-                '</div>';
-            document.getElementById('back-link').setAttribute('href', MemStudy.withCtx('/rentals/listing/' + listing.id));
-        } else {
-            document.getElementById('listing-summary').textContent = 'No listing selected.';
-        }
+        MemStudy.loadListings().then(function (listings) {
+            const listing = listings.find(function (x) { return x.id === listingId; });
+            if (listing) {
+                document.getElementById('listing-summary').innerHTML =
+                    '<div class="flex items-center gap-4">' +
+                        '<img src="' + listingPhotos(listing)[0] + '" alt="Apartment photo" class="w-24 h-16 object-cover rounded-md">' +
+                        '<div><strong class="text-gray-900">' + listing.title + '</strong><br>' +
+                        listing.address + ', ' + listing.neighborhood + ' &middot; ' + formatPrice(listing.price) + '/mo</div>' +
+                    '</div>';
+                document.getElementById('back-link').setAttribute('href', MemStudy.withCtx('/rentals/listing/' + listing.id));
+            } else {
+                // Unknown listing, or a step-2 listing that hasn't been released yet.
+                document.getElementById('listing-summary').textContent = 'This listing is no longer available.';
+                form.classList.add('hidden');
+            }
+        });
 
         // Field names in form order, with the tier each one was designed to probe.
         const tiers = {};

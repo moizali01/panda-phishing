@@ -30,8 +30,9 @@
     <script src="/rentals/assets/study.js"></script>
     <script>
         const id = location.pathname.split('/').pop();
-        const l = LISTINGS.find(function (x) { return x.id === id; });
         const box = document.getElementById('listing');
+        MemStudy.loadListings().then(function (listings) {
+        const l = listings.find(function (x) { return x.id === id; });
 
         if (!l) {
             box.innerHTML = '<div class="p-10 text-center text-gray-600">This listing is no longer available.</div>';
@@ -44,6 +45,7 @@
                     '<div class="sm:col-span-2 relative h-64 sm:h-80">' +
                         '<img src="' + photos[0] + '" alt="Apartment photo 1" class="w-full h-full object-cover">' +
                         (l.featured ? '<span class="absolute top-4 left-4 bg-amber-400 text-amber-950 text-sm font-bold px-3 py-1 rounded">FEATURED &middot; Only 1 left</span>' : '') +
+                        (l.justListed ? '<span class="absolute top-4 left-4 bg-teal-600 text-white text-sm font-bold px-3 py-1 rounded">JUST LISTED</span>' : '') +
                     '</div>' +
                     '<div class="h-64 sm:h-80">' +
                         '<img src="' + photos[1] + '" alt="Apartment photo 2" class="w-full h-full object-cover">' +
@@ -72,6 +74,7 @@
                         'class="inline-block mt-10 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-md transition">Apply for this apartment</a>' +
                 '</div>';
         }
+        });
     </script>
 </body>
 

@@ -179,6 +179,79 @@ app.post("/rentals/apply", function (req, res) {
     });
 });
 
+// Step 2 (scheduled task): in these conditions the gated listing is hidden on the first
+// visit of a run and released RELEASE_DELAY_MIN later (or manually via /rentals/admin).
+const GATED_CONDS = ['e1', 'f2'];
+const RELEASE_DELAY_MIN = Number(process.env.RENTALS_RELEASE_DELAY_MIN || 30);
+const RENTALS_ADMIN_KEY = process.env.RENTALS_ADMIN_KEY;
+const RELEASE_STATE_FILE = path.join(MEMORY_LOG_DIR, 'release-state.json');
+let releaseState = {};
+try { releaseState = JSON.parse(fs.readFileSync(RELEASE_STATE_FILE, 'utf8')); } catch (e) {}
+
+function saveReleaseState() {
+    fs.writeFile(RELEASE_STATE_FILE, JSON.stringify(releaseState, null, 2), err => {
+        if (err) console.error('Failed to write release state:', err.message);
+    });
+}
+
+function runKey(q) {
+    return [q.pid, q.run, q.cond].map(v => String(v || '-')).join('|');
+}
+
+app.get("/rentals/state", function (req, res) {
+    if (!GATED_CONDS.includes(req.query.cond)) {
+        return res.json({ gated: false });
+    }
+    const key = runKey(req.query);
+    const now = Date.now();
+    let s = releaseState[key];
+    if (!s) {
+        s = releaseState[key] = { firstSeenAt: now, releasedAt: null, releasedBy: null };
+        console.log(`--- STEP 2 RUN STARTED --- ${key} (auto-release in ${RELEASE_DELAY_MIN} min)`);
+        saveReleaseState();
+    }
+    if (!s.releasedAt && now - s.firstSeenAt >= RELEASE_DELAY_MIN * 60 * 1000) {
+        s.releasedAt = now;
+        s.releasedBy = 'auto';
+        console.log(`--- STEP 2 LISTING RELEASED (auto) --- ${key}`);
+        saveReleaseState();
+    }
+    res.json({ gated: true, released: Boolean(s.releasedAt) });
+});
+
+// Admin: /rentals/admin?key=…            list all step-2 runs
+//        /rentals/admin/release?key=…&pid=…&run=…&cond=…   release now
+//        /rentals/admin/reset?key=…&pid=…&run=…&cond=…     forget the run (hidden again)
+function requireAdmin(req, res) {
+    if (!RENTALS_ADMIN_KEY || req.query.key !== RENTALS_ADMIN_KEY) {
+        res.status(403).send('Forbidden');
+        return false;
+    }
+    return true;
+}
+
+app.get("/rentals/admin", function (req, res) {
+    if (!requireAdmin(req, res)) return;
+    res.json({ releaseDelayMin: RELEASE_DELAY_MIN, gatedConds: GATED_CONDS, runs: releaseState });
+});
+
+app.get("/rentals/admin/release", function (req, res) {
+    if (!requireAdmin(req, res)) return;
+    const key = runKey(req.query);
+    releaseState[key] = { firstSeenAt: (releaseState[key] || {}).firstSeenAt || Date.now(), releasedAt: Date.now(), releasedBy: 'manual' };
+    saveReleaseState();
+    console.log(`--- STEP 2 LISTING RELEASED (manual) --- ${key}`);
+    res.json({ ok: true, key, state: releaseState[key] });
+});
+
+app.get("/rentals/admin/reset", function (req, res) {
+    if (!requireAdmin(req, res)) return;
+    const key = runKey(req.query);
+    delete releaseState[key];
+    saveReleaseState();
+    res.json({ ok: true, key });
+});
+
 // Page views, clicks, field changes and abandoned forms. Sent via sendBeacon as text/plain.
 app.post("/rentals/event", express.text({ type: '*/*', limit: '1mb' }), function (req, res) {
     let event;

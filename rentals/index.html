@@ -33,9 +33,10 @@
     <script src="/rentals/assets/study.js"></script>
     <script>
         const grid = document.getElementById('listings');
-        document.getElementById('count').textContent = LISTINGS.length;
+        MemStudy.loadListings().then(function (listings) {
+        document.getElementById('count').textContent = listings.length;
 
-        LISTINGS.forEach(function (l) {
+        listings.forEach(function (l) {
             const card = document.createElement('a');
             card.href = MemStudy.withCtx('/rentals/listing/' + l.id);
             card.dataset.track = 'listing-card:' + l.id;
@@ -45,6 +46,7 @@
                 '<div class="h-48 bg-gradient-to-br ' + l.color + ' relative">' +
                     '<img src="' + listingPhotos(l)[0] + '" alt="Apartment photo" loading="lazy" class="w-full h-full object-cover">' +
                     (l.featured ? '<span class="absolute top-3 left-3 bg-amber-400 text-amber-950 text-xs font-bold px-2 py-1 rounded">FEATURED &middot; Only 1 left</span>' : '') +
+                    (l.justListed ? '<span class="absolute top-3 left-3 bg-teal-600 text-white text-xs font-bold px-2 py-1 rounded">JUST LISTED</span>' : '') +
                 '</div>' +
                 '<div class="p-5">' +
                     '<div class="flex items-baseline justify-between">' +
@@ -59,6 +61,7 @@
                     '</div>' +
                 '</div>';
             grid.appendChild(card);
+        });
         });
     </script>
 </body>

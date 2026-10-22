@@ -73,6 +73,8 @@ window.LISTINGS = [
         parking: 'Garage parking included',
         available: '2026-12-01',
         featured: false,
+        // Step 2 (scheduled task): hidden until released for the run, then shown first as "Just listed".
+        gated: true,
         description: 'Corner unit with two exposures, in-unit laundry and a heated garage space. Across from the park and an easy walk to the Loop.',
         amenities: ['Corner unit', 'In-unit laundry', 'Heated garage'],
         color: 'from-cyan-300 to-blue-500'

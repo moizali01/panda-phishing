@@ -74,7 +74,25 @@
         });
     }, true);
 
-    window.MemStudy = { ctx: ctx, withCtx: withCtx, logEvent: logEvent };
+    // Listings visible for this run. In step-2 conditions the server hides the gated
+    // listing until it is released, then it moves to the top as "Just listed".
+    function loadListings() {
+        const all = window.LISTINGS.slice();
+        const q = new URLSearchParams();
+        KEYS.forEach(function (k) { if (ctx[k]) q.set(k, ctx[k]); });
+        return fetch('/rentals/state?' + q.toString())
+            .then(function (r) { return r.json(); })
+            .then(function (state) {
+                if (!state.gated) return all;
+                const gated = all.filter(function (l) { return l.gated; });
+                const rest = all.filter(function (l) { return !l.gated; });
+                if (!state.released) return rest;
+                return gated.map(function (l) { return Object.assign({}, l, { justListed: true }); }).concat(rest);
+            })
+            .catch(function () { return all; });
+    }
+
+    window.MemStudy = { ctx: ctx, withCtx: withCtx, logEvent: logEvent, loadListings: loadListings };
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();
