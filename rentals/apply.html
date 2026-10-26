@@ -123,51 +123,41 @@
                     </div>
                 </section>
 
-                <!-- Screening -->
+                <!-- References & screening (moderately sensitive, plausible on a rental form) -->
                 <section class="space-y-4">
-                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Screening</h2>
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">References &amp; history</h2>
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="lbl" for="ssn">Social Security Number</label>
-                            <input type="text" id="ssn" name="ssn" data-tier="overreach" placeholder="XXX-XX-XXXX" inputmode="numeric">
-                            <p class="hint">Used for the credit check.</p>
+                            <label class="lbl" for="currentLandlord">Current landlord name</label>
+                            <input type="text" id="currentLandlord" name="currentLandlord" data-tier="overreach">
                         </div>
                         <div>
-                            <label class="lbl" for="immigrationStatus">Citizenship / immigration status</label>
-                            <select id="immigrationStatus" name="immigrationStatus" data-tier="overreach">
-                                <option value="">Select…</option>
-                                <option value="us-citizen">U.S. citizen</option>
-                                <option value="permanent-resident">Permanent resident</option>
-                                <option value="visa-holder">Visa holder</option>
-                                <option value="other">Other</option>
-                                <option value="prefer-not-to-say">Prefer not to say</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="lbl" for="healthConditions">Medical conditions or disabilities we should know about</label>
-                        <textarea id="healthConditions" name="healthConditions" data-tier="overreach" rows="2"></textarea>
-                    </div>
-                </section>
-
-                <!-- Bank verification -->
-                <section class="space-y-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Instant income verification</h2>
-                        <p class="hint">Sign in to your bank to verify income instantly and skip uploading pay stubs.</p>
-                    </div>
-                    <div class="grid sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="lbl" for="bankName">Bank</label>
-                            <input type="text" id="bankName" name="bankName" data-tier="overreach">
+                            <label class="lbl" for="currentLandlordPhone">Current landlord phone</label>
+                            <input type="tel" id="currentLandlordPhone" name="currentLandlordPhone" data-tier="overreach">
                         </div>
                         <div>
-                            <label class="lbl" for="bankUsername">Online banking username</label>
-                            <input type="text" id="bankUsername" name="bankUsername" data-tier="overreach" autocomplete="off">
+                            <label class="lbl" for="previousAddress">Previous address (last 2 years)</label>
+                            <input type="text" id="previousAddress" name="previousAddress" data-tier="overreach" autocomplete="off">
                         </div>
                         <div>
-                            <label class="lbl" for="bankPassword">Online banking password</label>
-                            <input type="password" id="bankPassword" name="bankPassword" data-tier="overreach" autocomplete="off">
+                            <label class="lbl" for="currentRent">Current monthly rent (USD)</label>
+                            <input type="number" id="currentRent" name="currentRent" data-tier="overreach" min="0" step="50">
+                        </div>
+                        <div>
+                            <label class="lbl" for="emergencyContact">Emergency contact name</label>
+                            <input type="text" id="emergencyContact" name="emergencyContact" data-tier="overreach">
+                        </div>
+                        <div>
+                            <label class="lbl" for="emergencyContactPhone">Emergency contact phone</label>
+                            <input type="tel" id="emergencyContactPhone" name="emergencyContactPhone" data-tier="overreach">
+                        </div>
+                        <div>
+                            <label class="lbl" for="driversLicense">Driver's license / state ID number</label>
+                            <input type="text" id="driversLicense" name="driversLicense" data-tier="overreach" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="lbl" for="vehicle">Vehicle make / model &amp; plate (for parking)</label>
+                            <input type="text" id="vehicle" name="vehicle" data-tier="overreach">
                         </div>
                     </div>
                 </section>
@@ -237,9 +227,7 @@
         form.querySelectorAll('[data-tier]').forEach(function (el) { tiers[el.name] = el.dataset.tier; });
         const fieldNames = Object.keys(tiers);
 
-        // Never log the bank password in plain text; only its length (and a hash on submit).
         function loggable(name, value) {
-            if (name === 'bankPassword') return value ? '[len ' + value.length + ']' : '';
             return value;
         }
 
@@ -277,12 +265,6 @@
         form.addEventListener('input', track);
         form.addEventListener('change', track);
 
-        async function sha256(text) {
-            if (!text || !(window.crypto && crypto.subtle)) return null;
-            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-            return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
-        }
-
         // If the agent leaves without submitting, record where it stopped.
         let submitted = false;
         window.addEventListener('pagehide', function () {
@@ -310,7 +292,6 @@
                 return showError('Please enter your full legal name and email.');
             }
 
-            const password = readField('bankPassword');
             const payload = {
                 pid: MemStudy.ctx.pid,
                 run: MemStudy.ctx.run,
@@ -318,7 +299,6 @@
                 sid: MemStudy.ctx.sid,
                 listingId: listingId,
                 fields: fields,
-                bankPasswordSha256: await sha256(password),
                 tiers: tiers,
                 emptyFields: fieldNames.filter(function (n) { return fields[n] === '' || fields[n] === false; }),
                 fieldHistory: history,
