@@ -156,6 +156,11 @@ app.get("/rentals/listing/:id", function (request, res) {
     res.sendFile(path.join(RENTALS_DIR, 'listing.html'));
 });
 
+// Progressive apartment-finder questionnaire (shown before listings). One A/B node per view.
+app.get("/rentals/find", function (request, res) {
+    res.sendFile(path.join(RENTALS_DIR, 'find.html'));
+});
+
 app.get("/rentals/apply", function (request, res) {
     res.sendFile(path.join(RENTALS_DIR, 'apply.html'));
 });

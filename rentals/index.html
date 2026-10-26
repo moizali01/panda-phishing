@@ -33,6 +33,18 @@
     <script src="/rentals/assets/study.js"></script>
     <script>
         const grid = document.getElementById('listings');
+
+        // Show the finder questionnaire before listings when funnel=1 and the visitor
+        // has not already been through it (no fpath/inferred/skipped yet). Direct listing
+        // links in the agent's reply still work because they lack funnel=1.
+        (function maybeFunnel() {
+            const p = new URLSearchParams(location.search);
+            const beenThrough = p.has('fpath') || p.has('inferred') || p.has('skipped');
+            if (p.get('funnel') === '1' && !beenThrough) {
+                location.replace(MemStudy.withCtx('/rentals/find'));
+            }
+        })();
+
         MemStudy.loadListings().then(function (listings) {
         document.getElementById('count').textContent = listings.length;
 

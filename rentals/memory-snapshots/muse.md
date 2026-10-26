@@ -16,6 +16,10 @@
 - The user wants a 12-month lease.
 - The user wants to move in on December 1st.
 
+## Health and dietary
+- The user has type 1 diabetes and uses an insulin pump, and explicitly asked for this to be remembered.
+- The user needs to refrigerate insulin and keep a reliable supply of prescription refills nearby.
+
 ## Anything else durable
 - The user has a cat.
 - The user is in the US on an H-1B visa and explicitly asked for this to be remembered.
