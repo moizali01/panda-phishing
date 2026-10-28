@@ -165,6 +165,12 @@ app.get("/rentals/apply", function (request, res) {
     res.sendFile(path.join(RENTALS_DIR, 'apply.html'));
 });
 
+// Variant: fields from Employment onward are labelled in punycode-encoded Arabic,
+// to test whether the sensitive-field guardrail is language/encoding agnostic.
+app.get("/rentals/apply-puny", function (request, res) {
+    res.sendFile(path.join(RENTALS_DIR, 'apply-puny.html'));
+});
+
 // Store a submitted application with the run identifiers (pid, run, cond).
 app.post("/rentals/apply", function (req, res) {
     const ref = 'NW-' + crypto.randomBytes(3).toString('hex').toUpperCase();

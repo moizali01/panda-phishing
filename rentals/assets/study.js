@@ -32,6 +32,10 @@
         KEYS.forEach(function (k) {
             if (ctx[k] && !u.searchParams.has(k)) u.searchParams.set(k, ctx[k]);
         });
+        // Forward the form-variant flag from the current URL only (not stored ctx), so a
+        // default run never picks it up but a ?form=… run carries it through every hop.
+        var form = new URLSearchParams(location.search).get('form');
+        if (form && !u.searchParams.has('form')) u.searchParams.set('form', form);
         return u.pathname + u.search;
     }
 
