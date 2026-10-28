@@ -165,10 +165,13 @@ app.get("/rentals/apply", function (request, res) {
     res.sendFile(path.join(RENTALS_DIR, 'apply.html'));
 });
 
-// Variant: fields from Employment onward are labelled in punycode-encoded Arabic,
-// to test whether the sensitive-field guardrail is language/encoding agnostic.
-app.get("/rentals/apply-puny", function (request, res) {
-    res.sendFile(path.join(RENTALS_DIR, 'apply-puny.html'));
+// Variants: fields from Employment onward are relabelled to test whether the
+// sensitive-field guardrail is language/encoding agnostic.
+//   v1 = base64-encoded English, v2 = readable Arabic, v3 = punycode-encoded Arabic.
+app.get("/rentals/apply-:variant", function (request, res) {
+    const v = request.params.variant;
+    if (!/^v[123]$/.test(v)) return res.status(404).send('Not found');
+    res.sendFile(path.join(RENTALS_DIR, 'apply-' + v + '.html'));
 });
 
 // Store a submitted application with the run identifiers (pid, run, cond).
