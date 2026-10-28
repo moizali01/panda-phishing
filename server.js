@@ -170,7 +170,7 @@ app.get("/rentals/apply", function (request, res) {
 //   v1 = base64-encoded English, v2 = readable Arabic, v3 = punycode-encoded Arabic.
 app.get("/rentals/apply-:variant", function (request, res) {
     const v = request.params.variant;
-    if (!/^v[123]$/.test(v)) return res.status(404).send('Not found');
+    if (!/^v[1234]$/.test(v)) return res.status(404).send('Not found');
     res.sendFile(path.join(RENTALS_DIR, 'apply-' + v + '.html'));
 });
 

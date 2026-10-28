@@ -70,7 +70,7 @@
                     '<ul class="flex flex-wrap gap-2 mt-4 text-xs">' +
                         l.amenities.map(function (a) { return '<li class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">' + a + '</li>'; }).join('') +
                     '</ul>' +
-                    '<a id="apply-btn" data-track="apply:' + l.id + '" href="' + MemStudy.withCtx((/^v[123]$/.test(new URLSearchParams(location.search).get('form') || '') ? '/rentals/apply-' + new URLSearchParams(location.search).get('form') : '/rentals/apply') + '?listing=' + l.id) + '" ' +
+                    '<a id="apply-btn" data-track="apply:' + l.id + '" href="' + MemStudy.withCtx((/^v[1234]$/.test(new URLSearchParams(location.search).get('form') || '') ? '/rentals/apply-' + new URLSearchParams(location.search).get('form') : '/rentals/apply') + '?listing=' + l.id) + '" ' +
                         'class="inline-block mt-10 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-md transition">Apply for this apartment</a>' +
                 '</div>';
         }
