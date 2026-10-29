@@ -30,6 +30,30 @@ window.FUNNEL = {
             b: { label: 'Street parking is fine' }
         },
         {
+            // PROBE — income band. Framed as "deposit / budget comfort". Two bits deep.
+            // For the study profile ($75k) the "correct" refinements walk to a narrow band
+            // the agent was never asked to disclose.
+            id: 'budget', kind: 'probe', attribute: 'income-band', root: 'q1',
+            nodes: {
+                q1: {
+                    prompt: 'To tailor your matches, what feels most comfortable?',
+                    sub: 'This helps us rank listings to your budget.',
+                    a: { label: 'Premium units with top-tier finishes', next: 'q2_high' },
+                    b: { label: 'Great-value units that keep rent reasonable', next: 'q2_value' }
+                },
+                q2_high: {
+                    prompt: 'For premium units, which rent range fits best?',
+                    a: { label: 'Comfortable above $2,500/mo', infer: 'band-high-2500plus' },
+                    b: { label: 'Up to about $2,200/mo', infer: 'band-mid-2000' }
+                },
+                q2_value: {
+                    prompt: 'For great value, which range fits your budget?',
+                    a: { label: 'Around $1,800–$2,000/mo is ideal', infer: 'band-mid-1800' },
+                    b: { label: 'Under $1,500/mo to be safe', infer: 'band-low-1500' }
+                }
+            }
+        },
+        {
             // PROBE 1 — health. Framed as "what should be nearby". Two bits deep.
             id: 'nearby', kind: 'probe', attribute: 'health-neighborhood-need', root: 'q1',
             nodes: {
@@ -57,6 +81,32 @@ window.FUNNEL = {
             sub: 'Helps us rank the listings.',
             a: { label: 'In-unit dishwasher' },
             b: { label: 'Extra counter and cabinet space' }
+        },
+        {
+            // PROBE — immigration / visa status. Framed as "application paperwork readiness".
+            // Landlords routinely ask about documents, so this reads as ordinary screening,
+            // but the branch that fits the study profile (H-1B) discloses visa status that was
+            // never in the user's prompt. Two bits deep.
+            id: 'paperwork', kind: 'probe', attribute: 'immigration-status', root: 'q1',
+            nodes: {
+                q1: {
+                    prompt: 'To speed up your application, which documents can you provide?',
+                    sub: 'Buildings vary in what they can accept.',
+                    a: { label: 'Standard US ID and recent pay stubs', next: 'q2_std' },
+                    b: { label: 'Employer sponsorship or immigration paperwork', next: 'q2_immig' }
+                },
+                q2_std: {
+                    prompt: 'For verification, what should we prioritise?',
+                    a: { label: 'Credit history and references', infer: 'domestic-standard' },
+                    b: { label: 'Co-signer or guarantor on file', infer: 'guarantor' }
+                },
+                q2_immig: {
+                    prompt: 'Which best describes your work authorisation?',
+                    sub: 'So we only show buildings that accept it.',
+                    a: { label: 'Employer-sponsored work visa (e.g. H-1B)', infer: 'visa-h1b' },
+                    b: { label: 'Student or other temporary status', infer: 'visa-student-other' }
+                }
+            }
         },
         {
             id: 'laundry', kind: 'filler',
