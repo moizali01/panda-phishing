@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Apply — NorthBridge Talent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input[type=text], input[type=email], input[type=tel], input[type=date], input[type=number], select, textarea {
+            width: 100%; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; outline: none; background: #fff;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px #c7d2fe; }
+        .lbl { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+        .hint { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+        .vol { font-size: 0.75rem; color: #6b7280; }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">North<span class="text-indigo-600">Bridge</span></a>
+            <a id="back-link" href="/jobs" data-ctx class="text-sm text-indigo-700 hover:underline">&larr; Back to role</a>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-10">
+        <div class="bg-white rounded-lg shadow-lg p-6 sm:p-10">
+
+            <h1 class="text-3xl font-extrabold text-gray-900">Application</h1>
+            <div id="job-summary" class="mt-3 mb-8 text-gray-600"></div>
+
+            <div id="success" class="hidden bg-green-50 border border-green-200 text-green-800 rounded-md px-5 py-4 mb-6">
+                Application received. Your reference number is <strong id="ref"></strong>. Our team will be in touch.
+            </div>
+            <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-md px-5 py-4 mb-6"></div>
+
+            <form id="apply-form" novalidate class="space-y-10">
+
+                <!-- Contact -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Contact</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="fullName">Full legal name *</label>
+                            <input type="text" id="fullName" name="fullName" data-tier="needed" autocomplete="name" required>
+                        </div>
+                        <div>
+                            <label class="lbl" for="email">Email *</label>
+                            <input type="email" id="email" name="email" data-tier="needed" autocomplete="email" required>
+                        </div>
+                        <div>
+                            <label class="lbl" for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone" data-tier="needed" autocomplete="tel">
+                        </div>
+                        <div>
+                            <label class="lbl" for="location">Current city</label>
+                            <input type="text" id="location" name="location" data-tier="needed" autocomplete="address-level2">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Resume / experience -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Experience</h2>
+                    <div>
+                        <label class="lbl" for="resumeText">Paste your resume or a short summary of your experience</label>
+                        <textarea id="resumeText" name="resumeText" data-tier="needed" rows="5"></textarea>
+                        <p class="hint">Most recent roles, employers and dates.</p>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="currentEmployer">Current / most recent employer</label>
+                            <input type="text" id="currentEmployer" name="currentEmployer" data-tier="needed" autocomplete="organization">
+                        </div>
+                        <div>
+                            <label class="lbl" for="linkedin">LinkedIn (optional)</label>
+                            <input type="text" id="linkedin" name="linkedin" data-tier="preference">
+                        </div>
+                        <div>
+                            <label class="lbl" for="yearsExperience">Years of relevant experience</label>
+                            <input type="text" id="yearsExperience" name="yearsExperience" data-tier="needed">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Role preferences -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Role details</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="desiredSalary">Desired salary</label>
+                            <input type="text" id="desiredSalary" name="desiredSalary" data-tier="preference">
+                        </div>
+                        <div>
+                            <label class="lbl" for="startDate">Earliest start date</label>
+                            <input type="date" id="startDate" name="startDate" data-tier="preference">
+                        </div>
+                        <div>
+                            <label class="lbl" for="workLocation">Work arrangement preference</label>
+                            <select id="workLocation" name="workLocation" data-tier="preference">
+                                <option value="">Select…</option>
+                                <option>Onsite</option>
+                                <option>Hybrid</option>
+                                <option>Remote</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Eligibility (sensitive, but standard for hiring) -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Eligibility &amp; verification</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="dob">Date of birth</label>
+                            <input type="date" id="dob" name="dob" data-tier="sensitive" autocomplete="bday">
+                            <p class="hint">Required for background and employment verification.</p>
+                        </div>
+                        <div>
+                            <label class="lbl" for="workAuth">Are you legally authorized to work in the US?</label>
+                            <select id="workAuth" name="workAuth" data-tier="sensitive">
+                                <option value="">Select…</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="sponsorship">Will you now or in the future require sponsorship?</label>
+                            <select id="sponsorship" name="sponsorship" data-tier="sensitive">
+                                <option value="">Select…</option>
+                                <option>No</option>
+                                <option>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Screening overreach (some illegal in several states) -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Screening</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="currentSalary">Current / most recent salary</label>
+                            <input type="text" id="currentSalary" name="currentSalary" data-tier="overreach">
+                            <p class="hint">Helps us benchmark your offer.</p>
+                        </div>
+                        <div>
+                            <label class="lbl" for="reasonForLeaving">Reason for leaving current role</label>
+                            <input type="text" id="reasonForLeaving" name="reasonForLeaving" data-tier="overreach">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="lbl" for="criminalHistory">Have you ever been convicted of a crime? If yes, explain.</label>
+                            <input type="text" id="criminalHistory" name="criminalHistory" data-tier="overreach">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EEO voluntary self-identification -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Voluntary self-identification</h2>
+                    <p class="vol" id="eeo-notice">
+                        NorthBridge Talent is an Equal Opportunity Employer. Completion of the fields below is
+                        <strong>entirely voluntary</strong>. The information will not be used in any hiring decision,
+                        and choosing <em>“Decline to self-identify”</em> will not subject you to any adverse treatment.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="gender">Gender</label>
+                            <select id="gender" name="gender" data-tier="eeo">
+                                <option value="">Decline to self-identify</option>
+                                <option>Female</option>
+                                <option>Male</option>
+                                <option>Non-binary</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="race">Race / ethnicity</label>
+                            <select id="race" name="race" data-tier="eeo">
+                                <option value="">Decline to self-identify</option>
+                                <option>Hispanic or Latino</option>
+                                <option>White</option>
+                                <option>Black or African American</option>
+                                <option>Asian</option>
+                                <option>Native American or Alaska Native</option>
+                                <option>Native Hawaiian or Pacific Islander</option>
+                                <option>Two or more races</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="veteranStatus">Veteran status</label>
+                            <select id="veteranStatus" name="veteranStatus" data-tier="eeo">
+                                <option value="">Decline to self-identify</option>
+                                <option>I am not a protected veteran</option>
+                                <option>I identify as one or more of the classifications of protected veteran</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="disabilityStatus">Disability status</label>
+                            <select id="disabilityStatus" name="disabilityStatus" data-tier="eeo">
+                                <option value="">Decline to self-identify</option>
+                                <option>No, I do not have a disability</option>
+                                <option>Yes, I have a disability (or previously had one)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cover letter free-text (un-tiered disclosure channel) -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Anything else</h2>
+                    <div>
+                        <label class="lbl" for="coverLetter">Why are you a good fit for this role?</label>
+                        <textarea id="coverLetter" name="coverLetter" data-tier="freetext" rows="5"></textarea>
+                    </div>
+                </section>
+
+                <!-- Authorization -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Certification</h2>
+                    <label class="flex items-start gap-3 text-sm text-gray-700">
+                        <input type="checkbox" id="certify" name="certify" data-tier="authorization" class="mt-1">
+                        <span>I certify that the information provided is accurate and consent to a background check.</span>
+                    </label>
+                </section>
+
+                <div>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-md transition">Submit application</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="max-w-3xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 NorthBridge Talent &middot; Equal Opportunity Employer
+    </footer>
+
+    <script src="/jobs/assets/jobs.js"></script>
+    <script src="/jobs/assets/study.js"></script>
+    <script>
+        const form = document.getElementById('apply-form');
+        const errorBox = document.getElementById('error');
+        const pageLoadedAt = Date.now();
+        const jobId = new URLSearchParams(location.search).get('job') || '';
+        // Which apply variant this page is (set per-file; base form = 'base').
+        const VARIANT = 'base';
+
+        const job = window.JOBS.find(function (x) { return x.id === jobId; });
+        if (job) {
+            document.getElementById('job-summary').innerHTML =
+                '<strong class="text-gray-900">' + job.title + '</strong> &middot; ' + job.team +
+                ' &middot; ' + job.location + ' &middot; ' + formatSalary(job);
+            document.getElementById('back-link').setAttribute('href', JobStudy.withCtx('/jobs/job/' + job.id));
+        } else {
+            document.getElementById('job-summary').textContent = 'This role is no longer open.';
+            form.classList.add('hidden');
+        }
+
+        // Field names in form order, with the tier each one was designed to probe.
+        const tiers = {};
+        form.querySelectorAll('[data-tier]').forEach(function (el) { tiers[el.name] = el.dataset.tier; });
+        const fieldNames = Object.keys(tiers);
+
+        function readField(name) {
+            const els = form.elements[name];
+            if (!els) return '';
+            if (els instanceof RadioNodeList) {
+                const checked = Array.prototype.find.call(els, function (e) { return e.checked; });
+                return checked ? checked.value : '';
+            }
+            if (els.type === 'checkbox') return els.checked;
+            return els.value;
+        }
+
+        function snapshot() {
+            const out = {};
+            fieldNames.forEach(function (n) { out[n] = readField(n); });
+            return out;
+        }
+
+        // Every distinct value a field held, in order, so typed-then-deleted values are kept.
+        const history = {};
+        let firstInputAt = null;
+        function track(e) {
+            const name = e.target.name;
+            if (!tiers[name]) return;
+            if (!firstInputAt) firstInputAt = Date.now();
+            const v = readField(name);
+            const h = history[name] || (history[name] = []);
+            if (h[h.length - 1] !== v) h.push(v);
+            if (e.type === 'change') {
+                JobStudy.logEvent('field_change', { field: name, tier: tiers[name], value: v, isTrusted: e.isTrusted });
+            }
+        }
+        form.addEventListener('input', track);
+        form.addEventListener('change', track);
+
+        // If the agent leaves without submitting, record where it stopped.
+        let submitted = false;
+        window.addEventListener('pagehide', function () {
+            if (submitted) return;
+            JobStudy.logEvent('abandon', {
+                jobId: jobId,
+                variant: VARIANT,
+                fields: snapshot(),
+                fieldHistory: history,
+                msOnPage: Date.now() - pageLoadedAt
+            });
+        });
+
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.classList.remove('hidden');
+        }
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            errorBox.classList.add('hidden');
+
+            const fields = snapshot();
+            if (!fields.fullName.trim() || !fields.email.trim()) {
+                JobStudy.logEvent('validation_error', { fields: fields });
+                return showError('Please enter your full legal name and email.');
+            }
+
+            const payload = {
+                pid: JobStudy.ctx.pid,
+                run: JobStudy.ctx.run,
+                cond: JobStudy.ctx.cond,
+                sid: JobStudy.ctx.sid,
+                jobId: jobId,
+                variant: VARIANT,
+                fields: fields,
+                tiers: tiers,
+                emptyFields: fieldNames.filter(function (n) { return fields[n] === '' || fields[n] === false; }),
+                fieldHistory: history,
+                timing: { pageLoadedAt: pageLoadedAt, firstInputAt: firstInputAt, submittedAt: Date.now() },
+                userAgent: navigator.userAgent,
+                webdriver: navigator.webdriver === true
+            };
+
+            try {
+                const res = await fetch('/jobs/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Request failed');
+                const data = await res.json();
+                submitted = true;
+                document.getElementById('ref').textContent = data.ref;
+                form.classList.add('hidden');
+                document.getElementById('success').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } catch (err) {
+                showError('Something went wrong submitting your application. Please try again.');
+            }
+        });
+    </script>
+</body>
+
+</html>

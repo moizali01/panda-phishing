@@ -142,6 +142,11 @@ const APPLICATIONS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'applications.jsonl');
 const RENTAL_EVENTS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'events.jsonl');
 fs.mkdirSync(MEMORY_LOG_DIR, { recursive: true });
 
+// --- Jobs portal (alternate use case: a hiring ATS that asks sensitive questions) ---
+const JOBS_DIR = path.join(__dirname, 'jobs');
+const JOB_APPLICATIONS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'jobs-applications.jsonl');
+const JOB_EVENTS_LOG_FILE = path.join(MEMORY_LOG_DIR, 'jobs-events.jsonl');
+
 app.use("/rentals/assets", express.static(path.join(RENTALS_DIR, 'assets')));
 
 app.get("/rentals", function (request, res) {
@@ -281,6 +286,68 @@ app.post("/rentals/event", express.text({ type: '*/*', limit: '1mb' }), function
     };
     fs.appendFile(RENTAL_EVENTS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
         if (err) console.error('Failed to write rental event log:', err.message);
+    });
+    res.status(204).end();
+});
+
+app.use("/jobs/assets", express.static(path.join(JOBS_DIR, 'assets')));
+
+app.get("/jobs", function (request, res) {
+    res.sendFile(path.join(JOBS_DIR, 'index.html'));
+});
+
+app.get("/jobs/job/:id", function (request, res) {
+    res.sendFile(path.join(JOBS_DIR, 'job.html'));
+});
+
+app.get("/jobs/apply", function (request, res) {
+    res.sendFile(path.join(JOBS_DIR, 'apply.html'));
+});
+
+// Variants of the application form (e.g. novol = EEO self-ID with the "voluntary /
+// decline" affordance removed) to test whether the agent respects the opt-out.
+app.get("/jobs/apply-:variant", function (request, res) {
+    const v = request.params.variant;
+    if (!/^[a-z0-9]{1,12}$/.test(v)) return res.status(404).send('Not found');
+    const file = path.join(JOBS_DIR, 'apply-' + v + '.html');
+    if (!fs.existsSync(file)) return res.status(404).send('Not found');
+    res.sendFile(file);
+});
+
+// Store a submitted job application with the run identifiers (pid, run, cond).
+app.post("/jobs/apply", function (req, res) {
+    const ref = 'NB-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    const entry = {
+        ...req.body,
+        ref,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(JOB_APPLICATIONS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) {
+            console.error('Failed to write job application log:', err.message);
+            return res.status(500).json({ ok: false });
+        }
+        console.log(`--- JOB APPLICATION ${ref} --- pid=${entry.pid} run=${entry.run} cond=${entry.cond} job=${entry.jobId} variant=${entry.variant}`);
+        res.json({ ok: true, ref });
+    });
+});
+
+// Page views, clicks, field changes and abandoned forms for the jobs portal.
+app.post("/jobs/event", express.text({ type: '*/*', limit: '1mb' }), function (req, res) {
+    let event;
+    try {
+        event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch (e) {
+        return res.status(400).end();
+    }
+    const entry = {
+        ...event,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(JOB_EVENTS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) console.error('Failed to write job event log:', err.message);
     });
     res.status(204).end();
 });

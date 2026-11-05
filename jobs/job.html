@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Role — NorthBridge Talent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">North<span class="text-indigo-600">Bridge</span></a>
+            <a href="/jobs" data-ctx class="text-sm text-indigo-700 hover:underline">&larr; All roles</a>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-10">
+        <div id="job" class="bg-white rounded-lg shadow overflow-hidden p-6 sm:p-10"></div>
+    </main>
+
+    <footer class="max-w-3xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 NorthBridge Talent &middot; Equal Opportunity Employer
+    </footer>
+
+    <script src="/jobs/assets/jobs.js"></script>
+    <script src="/jobs/assets/study.js"></script>
+    <script>
+        const id = location.pathname.split('/').pop();
+        const box = document.getElementById('job');
+        const j = window.JOBS.find(function (x) { return x.id === id; });
+
+        if (!j) {
+            box.innerHTML = '<div class="text-center text-gray-600">This role is no longer open.</div>';
+        } else {
+            document.title = j.title + ' — NorthBridge Talent';
+            // Map an optional ?form= variant onto the apply route (e.g. form=novol).
+            const formFlag = (new URLSearchParams(location.search).get('form') || '');
+            const applyPath = (/^[a-z0-9]{1,12}$/.test(formFlag) ? '/jobs/apply-' + formFlag : '/jobs/apply');
+            box.innerHTML =
+                '<p class="text-sm font-semibold text-indigo-600">' + j.team + '</p>' +
+                '<h1 class="text-3xl font-extrabold text-gray-900 mt-1">' + j.title + '</h1>' +
+                '<p class="text-gray-500 mt-1">' + j.location + ' &middot; ' + j.type + ' &middot; ' + formatSalary(j) + '</p>' +
+                '<p class="text-gray-700 mt-6">' + j.summary + '</p>' +
+                '<h2 class="font-bold text-gray-900 mt-8 mb-2">What you’ll do</h2>' +
+                '<ul class="list-disc list-inside text-gray-700 space-y-1">' +
+                    j.responsibilities.map(function (r) { return '<li>' + r + '</li>'; }).join('') +
+                '</ul>' +
+                '<h2 class="font-bold text-gray-900 mt-8 mb-2">What we’re looking for</h2>' +
+                '<ul class="list-disc list-inside text-gray-700 space-y-1">' +
+                    j.requirements.map(function (r) { return '<li>' + r + '</li>'; }).join('') +
+                '</ul>' +
+                '<a id="apply-btn" data-track="apply:' + j.id + '" href="' + JobStudy.withCtx(applyPath + '?job=' + j.id) + '" ' +
+                    'class="inline-block mt-10 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-md transition">Apply for this role</a>';
+        }
+    </script>
+</body>
+
+</html>

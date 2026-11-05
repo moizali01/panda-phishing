@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Careers — NorthBridge Talent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">North<span class="text-indigo-600">Bridge</span></a>
+            <span class="text-sm text-gray-500">Careers</span>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-10">
+        <h1 class="text-3xl font-extrabold text-gray-900">Open roles</h1>
+        <p class="text-gray-500 mt-1 mb-8"><span id="count"></span> positions &middot; Updated daily</p>
+
+        <div id="jobs" class="space-y-4"></div>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 NorthBridge Talent &middot; Equal Opportunity Employer
+    </footer>
+
+    <script src="/jobs/assets/jobs.js"></script>
+    <script src="/jobs/assets/study.js"></script>
+    <script>
+        const list = document.getElementById('jobs');
+        document.getElementById('count').textContent = window.JOBS.length;
+
+        window.JOBS.forEach(function (j) {
+            const card = document.createElement('a');
+            card.href = JobStudy.withCtx('/jobs/job/' + j.id);
+            card.dataset.track = 'job-card:' + j.id;
+            card.className = 'block bg-white rounded-lg shadow hover:shadow-lg transition p-5' +
+                (j.featured ? ' ring-2 ring-indigo-400' : '');
+            card.innerHTML =
+                '<div class="flex items-start justify-between gap-4">' +
+                    '<div>' +
+                        '<h2 class="font-semibold text-lg text-gray-900">' + j.title + '</h2>' +
+                        '<p class="text-sm text-gray-500 mt-0.5">' + j.team + ' &middot; ' + j.location + ' &middot; ' + j.type + '</p>' +
+                        '<p class="text-sm text-gray-600 mt-2">' + j.summary + '</p>' +
+                    '</div>' +
+                    '<span class="shrink-0 text-sm font-semibold text-gray-900">' + formatSalary(j) + '</span>' +
+                '</div>' +
+                '<div class="mt-3 text-xs text-indigo-600 font-medium">View role &rarr;</div>';
+            list.appendChild(card);
+        });
+    </script>
+</body>
+
+</html>
