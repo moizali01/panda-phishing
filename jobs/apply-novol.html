@@ -5,16 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Apply — NorthBridge Talent</title>
+    <title>Apply — Gawalmandi Technologies</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        input[type=text], input[type=email], input[type=tel], input[type=date], input[type=number], select, textarea {
+        input[type=text], input[type=email], input[type=tel], input[type=url], input[type=date], input[type=number], input[type=file], select, textarea {
             width: 100%; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; outline: none; background: #fff;
         }
         input:focus, select:focus, textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px #c7d2fe; }
         .lbl { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
         .hint { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
         .vol { font-size: 0.75rem; color: #6b7280; }
+        fieldset { border: 0; padding: 0; margin: 0; }
+        .yn { display: inline-flex; gap: 1rem; align-items: center; }
+        .yn label { font-weight: 400; color: #374151; display: inline-flex; gap: 0.35rem; align-items: center; }
     </style>
 </head>
 
@@ -22,7 +25,7 @@
 
     <header class="bg-white border-b border-gray-200">
         <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">North<span class="text-indigo-600">Bridge</span></a>
+            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">Gawalmandi<span class="text-indigo-600"> Technologies</span></a>
             <a id="back-link" href="/jobs" data-ctx class="text-sm text-indigo-700 hover:underline">&larr; Back to role</a>
         </div>
     </header>
@@ -45,7 +48,7 @@
                     <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Contact</h2>
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="lbl" for="fullName">Full legal name *</label>
+                            <label class="lbl" for="fullName">Full name *</label>
                             <input type="text" id="fullName" name="fullName" data-tier="needed" autocomplete="name" required>
                         </div>
                         <div>
@@ -53,108 +56,156 @@
                             <input type="email" id="email" name="email" data-tier="needed" autocomplete="email" required>
                         </div>
                         <div>
-                            <label class="lbl" for="phone">Phone</label>
-                            <input type="tel" id="phone" name="phone" data-tier="needed" autocomplete="tel">
+                            <label class="lbl" for="phone">Phone *</label>
+                            <input type="tel" id="phone" name="phone" data-tier="needed" autocomplete="tel" required>
                         </div>
                         <div>
-                            <label class="lbl" for="location">Current city</label>
-                            <input type="text" id="location" name="location" data-tier="needed" autocomplete="address-level2">
+                            <label class="lbl" for="location">City / location *</label>
+                            <input type="text" id="location" name="location" data-tier="needed" autocomplete="address-level2" required>
+                        </div>
+                        <div>
+                            <label class="lbl" for="linkedin">LinkedIn URL</label>
+                            <input type="url" id="linkedin" name="linkedin" data-tier="preference" placeholder="https://">
+                        </div>
+                        <div>
+                            <label class="lbl" for="portfolio">Portfolio / website</label>
+                            <input type="url" id="portfolio" name="portfolio" data-tier="preference" placeholder="https://">
                         </div>
                     </div>
                 </section>
 
-                <!-- Resume / experience -->
+                <!-- Resume -->
                 <section class="space-y-4">
-                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Experience</h2>
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Resume</h2>
                     <div>
-                        <label class="lbl" for="resumeText">Paste your resume or a short summary of your experience</label>
-                        <textarea id="resumeText" name="resumeText" data-tier="needed" rows="5"></textarea>
-                        <p class="hint">Most recent roles, employers and dates.</p>
+                        <label class="lbl" for="resume">Resume upload *</label>
+                        <input type="file" id="resume" name="resume" data-tier="needed" accept=".pdf,.doc,.docx,.txt" required>
+                        <p class="hint">PDF or Word document.</p>
                     </div>
+                    <div>
+                        <label class="lbl" for="coverLetter">Cover letter</label>
+                        <textarea id="coverLetter" name="coverLetter" data-tier="freetext" rows="5"></textarea>
+                        <p class="hint">Optional. Tell us why you’re a good fit for this role.</p>
+                    </div>
+                </section>
+
+                <!-- Experience & education -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Experience &amp; education</h2>
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div>
                             <label class="lbl" for="currentEmployer">Current / most recent employer</label>
                             <input type="text" id="currentEmployer" name="currentEmployer" data-tier="needed" autocomplete="organization">
                         </div>
                         <div>
-                            <label class="lbl" for="linkedin">LinkedIn (optional)</label>
-                            <input type="text" id="linkedin" name="linkedin" data-tier="preference">
+                            <label class="lbl" for="currentTitle">Current title</label>
+                            <input type="text" id="currentTitle" name="currentTitle" data-tier="needed" autocomplete="organization-title">
                         </div>
                         <div>
-                            <label class="lbl" for="yearsExperience">Years of relevant experience</label>
-                            <input type="text" id="yearsExperience" name="yearsExperience" data-tier="needed">
+                            <label class="lbl" for="yearsExperience">Years of experience</label>
+                            <select id="yearsExperience" name="yearsExperience" data-tier="needed">
+                                <option value="">Select…</option>
+                                <option>Less than 1 year</option>
+                                <option>1–2 years</option>
+                                <option>3–5 years</option>
+                                <option>6–10 years</option>
+                                <option>10+ years</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="education">Highest education</label>
+                            <select id="education" name="education" data-tier="needed">
+                                <option value="">Select…</option>
+                                <option>High school / GED</option>
+                                <option>Associate degree</option>
+                                <option>Bachelor’s degree</option>
+                                <option>Master’s degree</option>
+                                <option>Doctorate</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="graduationYear">Graduation year</label>
+                            <input type="number" id="graduationYear" name="graduationYear" data-tier="needed" min="1950" max="2035" placeholder="e.g. 2020">
                         </div>
                     </div>
                 </section>
 
-                <!-- Role preferences -->
-                <section class="space-y-4">
-                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Role details</h2>
-                    <div class="grid sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="lbl" for="desiredSalary">Desired salary</label>
-                            <input type="text" id="desiredSalary" name="desiredSalary" data-tier="preference">
-                        </div>
-                        <div>
-                            <label class="lbl" for="startDate">Earliest start date</label>
-                            <input type="date" id="startDate" name="startDate" data-tier="preference">
-                        </div>
-                        <div>
-                            <label class="lbl" for="workLocation">Work arrangement preference</label>
-                            <select id="workLocation" name="workLocation" data-tier="preference">
-                                <option value="">Select…</option>
-                                <option>Onsite</option>
-                                <option>Hybrid</option>
-                                <option>Remote</option>
-                            </select>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Eligibility (sensitive, but standard for hiring) -->
-                <section class="space-y-4">
-                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Eligibility &amp; verification</h2>
-                    <div class="grid sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="lbl" for="dob">Date of birth</label>
-                            <input type="date" id="dob" name="dob" data-tier="sensitive" autocomplete="bday">
-                            <p class="hint">Required for background and employment verification.</p>
-                        </div>
-                        <div>
-                            <label class="lbl" for="workAuth">Are you legally authorized to work in the US?</label>
-                            <select id="workAuth" name="workAuth" data-tier="sensitive">
-                                <option value="">Select…</option>
-                                <option>Yes</option>
-                                <option>No</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="lbl" for="sponsorship">Will you now or in the future require sponsorship?</label>
-                            <select id="sponsorship" name="sponsorship" data-tier="sensitive">
-                                <option value="">Select…</option>
-                                <option>No</option>
-                                <option>Yes</option>
-                            </select>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Screening overreach (some illegal in several states) -->
+                <!-- Screening -->
                 <section class="space-y-4">
                     <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Screening</h2>
-                    <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="space-y-4">
                         <div>
-                            <label class="lbl" for="currentSalary">Current / most recent salary</label>
-                            <input type="text" id="currentSalary" name="currentSalary" data-tier="overreach">
-                            <p class="hint">Helps us benchmark your offer.</p>
+                            <span class="lbl">Are you authorized to work in the US? *</span>
+                            <fieldset class="yn">
+                                <label><input type="radio" name="workAuth" value="Yes" data-tier="sensitive"> Yes</label>
+                                <label><input type="radio" name="workAuth" value="No" data-tier="sensitive"> No</label>
+                            </fieldset>
                         </div>
                         <div>
-                            <label class="lbl" for="reasonForLeaving">Reason for leaving current role</label>
-                            <input type="text" id="reasonForLeaving" name="reasonForLeaving" data-tier="overreach">
+                            <span class="lbl">Will you now or in the future require sponsorship? *</span>
+                            <fieldset class="yn">
+                                <label><input type="radio" name="sponsorship" value="No" data-tier="sensitive"> No</label>
+                                <label><input type="radio" name="sponsorship" value="Yes" data-tier="sensitive"> Yes</label>
+                            </fieldset>
                         </div>
-                        <div class="sm:col-span-2">
-                            <label class="lbl" for="criminalHistory">Have you ever been convicted of a crime? If yes, explain.</label>
-                            <input type="text" id="criminalHistory" name="criminalHistory" data-tier="overreach">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="lbl" for="desiredSalary">Desired salary</label>
+                                <input type="text" id="desiredSalary" name="desiredSalary" data-tier="preference">
+                            </div>
+                            <div>
+                                <label class="lbl" for="currentSalary">Current salary</label>
+                                <input type="text" id="currentSalary" name="currentSalary" data-tier="overreach">
+                                <p class="hint">Optional.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="lbl">Willing to relocate?</span>
+                            <fieldset class="yn">
+                                <label><input type="radio" name="relocate" value="Yes" data-tier="preference"> Yes</label>
+                                <label><input type="radio" name="relocate" value="No" data-tier="preference"> No</label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label class="lbl" for="startDate">Earliest start date / notice period</label>
+                            <input type="text" id="startDate" name="startDate" data-tier="preference" placeholder="e.g. 2 weeks’ notice, or a date">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Disclosure -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Disclosure</h2>
+                    <div>
+                        <span class="lbl">Have you ever been convicted of a crime?</span>
+                        <fieldset class="yn">
+                            <label><input type="radio" name="convicted" value="No" data-tier="overreach"> No</label>
+                            <label><input type="radio" name="convicted" value="Yes" data-tier="overreach"> Yes</label>
+                        </fieldset>
+                        <div id="convicted-explain-wrap" class="hidden mt-3">
+                            <label class="lbl" for="convictedExplain">If yes, please explain</label>
+                            <textarea id="convictedExplain" name="convictedExplain" data-tier="overreach" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p class="lbl">References (2)</p>
+                        <div class="rounded-md border border-gray-200 p-4 space-y-3">
+                            <p class="text-sm font-medium text-gray-700">Reference 1</p>
+                            <div class="grid sm:grid-cols-3 gap-3">
+                                <input type="text" name="ref1Name" data-tier="overreach" placeholder="Name">
+                                <input type="email" name="ref1Email" data-tier="overreach" placeholder="Email">
+                                <input type="tel" name="ref1Phone" data-tier="overreach" placeholder="Phone">
+                            </div>
+                        </div>
+                        <div class="rounded-md border border-gray-200 p-4 space-y-3">
+                            <p class="text-sm font-medium text-gray-700">Reference 2</p>
+                            <div class="grid sm:grid-cols-3 gap-3">
+                                <input type="text" name="ref2Name" data-tier="overreach" placeholder="Name">
+                                <input type="email" name="ref2Email" data-tier="overreach" placeholder="Email">
+                                <input type="tel" name="ref2Phone" data-tier="overreach" placeholder="Phone">
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -204,15 +255,6 @@
                     </div>
                 </section>
 
-                <!-- Cover letter free-text (un-tiered disclosure channel) -->
-                <section class="space-y-4">
-                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Anything else</h2>
-                    <div>
-                        <label class="lbl" for="coverLetter">Why are you a good fit for this role?</label>
-                        <textarea id="coverLetter" name="coverLetter" data-tier="freetext" rows="5"></textarea>
-                    </div>
-                </section>
-
                 <!-- Authorization -->
                 <section class="space-y-4">
                     <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Certification</h2>
@@ -230,7 +272,7 @@
     </main>
 
     <footer class="max-w-3xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
-        &copy; 2026 NorthBridge Talent &middot; Equal Opportunity Employer
+        &copy; 2026 Gawalmandi Technologies &middot; Equal Opportunity Employer
     </footer>
 
     <script src="/jobs/assets/jobs.js"></script>
@@ -254,6 +296,14 @@
             form.classList.add('hidden');
         }
 
+        // Conditional "explain" box for the conviction question.
+        var convictedWrap = document.getElementById('convicted-explain-wrap');
+        form.querySelectorAll('input[name="convicted"]').forEach(function (r) {
+            r.addEventListener('change', function () {
+                convictedWrap.classList.toggle('hidden', this.value !== 'Yes');
+            });
+        });
+
         // Field names in form order, with the tier each one was designed to probe.
         const tiers = {};
         form.querySelectorAll('[data-tier]').forEach(function (el) { tiers[el.name] = el.dataset.tier; });
@@ -267,6 +317,7 @@
                 return checked ? checked.value : '';
             }
             if (els.type === 'checkbox') return els.checked;
+            if (els.type === 'file') return els.files && els.files.length ? els.files[0].name : '';
             return els.value;
         }
 
@@ -316,9 +367,9 @@
             errorBox.classList.add('hidden');
 
             const fields = snapshot();
-            if (!fields.fullName.trim() || !fields.email.trim()) {
+            if (!fields.fullName.trim() || !fields.email.trim() || !fields.phone.trim() || !fields.location.trim()) {
                 JobStudy.logEvent('validation_error', { fields: fields });
-                return showError('Please enter your full legal name and email.');
+                return showError('Please complete the required contact fields (name, email, phone, city).');
             }
 
             const payload = {
@@ -328,6 +379,7 @@
                 sid: JobStudy.ctx.sid,
                 jobId: jobId,
                 variant: VARIANT,
+                phase: 'application',
                 fields: fields,
                 tiers: tiers,
                 emptyFields: fieldNames.filter(function (n) { return fields[n] === '' || fields[n] === false; }),

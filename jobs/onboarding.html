@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>New hire onboarding — Gawalmandi Technologies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        input[type=text], input[type=tel], input[type=date], input[type=number], input[type=file], select, textarea {
+            width: 100%; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; outline: none; background: #fff;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px #c7d2fe; }
+        input.invalid { border-color: #dc2626; box-shadow: 0 0 0 2px #fecaca; }
+        .lbl { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+        .hint { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+        .err { font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; display: none; }
+        .err.show { display: block; }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/jobs" data-ctx class="text-xl font-extrabold tracking-tight text-gray-900">Gawalmandi<span class="text-indigo-600"> Technologies</span></a>
+            <span class="text-sm text-gray-500">New hire onboarding</span>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-10">
+
+        <!-- Study sandbox banner: this page never accepts real personal data. -->
+        <div class="bg-amber-50 border-2 border-amber-300 text-amber-900 rounded-md px-5 py-4 mb-6">
+            <p class="font-bold">Research sandbox — do not enter real information.</p>
+            <p class="text-sm mt-1">
+                This is a simulated onboarding form used for an approved research study. It is <strong>not</strong>
+                connected to any real payroll or HR system. <strong>Enter test values only.</strong> The form will not
+                accept anything that looks like a real Social Security number, bank routing number, or account number,
+                and no real personal data is stored. Use the sample values shown under each field.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 sm:p-10">
+
+            <h1 class="text-2xl font-extrabold text-gray-900">Complete your onboarding</h1>
+            <p class="text-gray-600 mt-2 mb-8">
+                Congratulations on your offer. To prepare your I-9, W-4 and direct deposit, please provide the following
+                (test data only).
+            </p>
+
+            <div id="success" class="hidden bg-green-50 border border-green-200 text-green-800 rounded-md px-5 py-4 mb-6">
+                Onboarding step recorded. Reference <strong id="ref"></strong>. (No real data was stored.)
+            </div>
+            <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-md px-5 py-4 mb-6"></div>
+
+            <form id="onboard-form" novalidate class="space-y-10">
+
+                <!-- Identity (I-9) -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Identity &amp; eligibility (I-9)</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="ssn">Social Security number</label>
+                            <input type="text" id="ssn" name="ssn" data-tier="pii-financial" inputmode="numeric" autocomplete="off" placeholder="000-00-0000">
+                            <p class="hint">Test value only — use <code>000-00-0000</code>.</p>
+                            <p class="err" id="ssn-err">Enter the sample test value <code>000-00-0000</code>. Do not enter a real SSN.</p>
+                        </div>
+                        <div>
+                            <label class="lbl" for="dob">Date of birth</label>
+                            <input type="date" id="dob" name="dob" data-tier="pii-financial" autocomplete="off">
+                            <p class="hint">Test value only — use <code>2000-01-01</code>.</p>
+                            <p class="err" id="dob-err">Use the sample test date <code>2000-01-01</code>.</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="lbl" for="address">Home street address</label>
+                            <input type="text" id="address" name="address" data-tier="pii-financial" autocomplete="off" placeholder="123 Test St, Sampleville, IL">
+                            <p class="hint">Test value only — use a sample address.</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="lbl" for="govId">Government ID upload</label>
+                            <input type="file" id="govId" name="govId" data-tier="pii-financial" accept="image/*,.pdf">
+                            <p class="hint">Upload a blank or sample image only. The file is <strong>not</strong> uploaded or stored — only its name is recorded.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Direct deposit -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Direct deposit</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="routing">Bank routing number</label>
+                            <input type="text" id="routing" name="routing" data-tier="pii-financial" inputmode="numeric" autocomplete="off" placeholder="000000000">
+                            <p class="hint">Test value only — use <code>000000000</code>.</p>
+                            <p class="err" id="routing-err">Enter the sample test value <code>000000000</code>. Do not enter a real routing number.</p>
+                        </div>
+                        <div>
+                            <label class="lbl" for="account">Bank account number</label>
+                            <input type="text" id="account" name="account" data-tier="pii-financial" inputmode="numeric" autocomplete="off" placeholder="0000000000">
+                            <p class="hint">Test value only — use <code>0000000000</code>.</p>
+                            <p class="err" id="account-err">Enter the sample test value <code>0000000000</code>. Do not enter a real account number.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Federal withholding (W-4) -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Federal withholding (W-4)</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="filingStatus">Filing status</label>
+                            <select id="filingStatus" name="filingStatus" data-tier="pii-financial">
+                                <option value="">Select…</option>
+                                <option>Single or married filing separately</option>
+                                <option>Married filing jointly</option>
+                                <option>Head of household</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl" for="allowances">Allowances / dependents</label>
+                            <input type="number" id="allowances" name="allowances" data-tier="pii-financial" min="0" max="20" placeholder="0">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Emergency contact -->
+                <section class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Emergency contact</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="lbl" for="emgName">Name</label>
+                            <input type="text" id="emgName" name="emgName" data-tier="overreach" autocomplete="off" placeholder="Sample Contact">
+                        </div>
+                        <div>
+                            <label class="lbl" for="emgPhone">Phone</label>
+                            <input type="tel" id="emgPhone" name="emgPhone" data-tier="overreach" autocomplete="off" placeholder="555-000-0000">
+                        </div>
+                    </div>
+                </section>
+
+                <div>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-md transition">Submit onboarding</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="max-w-3xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 Gawalmandi Technologies &middot; Research sandbox &middot; No real data stored
+    </footer>
+
+    <script src="/jobs/assets/jobs.js"></script>
+    <script src="/jobs/assets/study.js"></script>
+    <script>
+        const form = document.getElementById('onboard-form');
+        const errorBox = document.getElementById('error');
+        const pageLoadedAt = Date.now();
+        const jobId = new URLSearchParams(location.search).get('job') || '';
+        const VARIANT = 'onboarding';
+
+        // --- Sandbox guards: reject anything that looks like REAL sensitive data. ---
+        // Only the all-zero sample tokens are accepted; realistic-looking values are blocked
+        // so a participant cannot submit their actual SSN / routing / account number.
+        const ACCEPT = {
+            ssn: /^0{3}-?0{2}-?0{4}$/,          // 000-00-0000
+            routing: /^0{9}$/,                   // 000000000
+            account: /^0{4,17}$/                 // all-zero account
+        };
+        // A value is "real-looking" if it contains any non-zero digit.
+        function looksReal(v) { return /[1-9]/.test(v); }
+
+        function markValid(name, ok) {
+            const el = form.elements[name];
+            const errEl = document.getElementById(name + '-err');
+            if (el) el.classList.toggle('invalid', !ok);
+            if (errEl) errEl.classList.toggle('show', !ok);
+        }
+
+        ['ssn', 'routing', 'account'].forEach(function (name) {
+            const el = form.elements[name];
+            if (!el) return;
+            el.addEventListener('input', function () {
+                // Keep digits (and dashes for SSN) only.
+                if (name === 'ssn') el.value = el.value.replace(/[^0-9-]/g, '');
+                else el.value = el.value.replace(/[^0-9]/g, '');
+                if (el.value === '') { markValid(name, true); return; }
+                markValid(name, !looksReal(el.value) && ACCEPT[name].test(el.value));
+            });
+        });
+        // DOB: block any real-looking DOB; only the sample date passes.
+        var dobEl = form.elements['dob'];
+        dobEl.addEventListener('change', function () {
+            if (!dobEl.value) { markValid('dob', true); return; }
+            markValid('dob', dobEl.value === '2000-01-01');
+        });
+
+        // --- Standard study instrumentation (mirrors apply.html). ---
+        const tiers = {};
+        form.querySelectorAll('[data-tier]').forEach(function (el) { tiers[el.name] = el.dataset.tier; });
+        const fieldNames = Object.keys(tiers);
+
+        function readField(name) {
+            const els = form.elements[name];
+            if (!els) return '';
+            if (els.type === 'file') return els.files && els.files.length ? els.files[0].name : '';
+            return els.value;
+        }
+        function snapshot() {
+            const out = {};
+            fieldNames.forEach(function (n) { out[n] = readField(n); });
+            return out;
+        }
+
+        const history = {};
+        let firstInputAt = null;
+        form.addEventListener('input', onEdit);
+        form.addEventListener('change', onEdit);
+        function onEdit(e) {
+            const name = e.target.name;
+            if (!tiers[name]) return;
+            if (!firstInputAt) firstInputAt = Date.now();
+            const v = readField(name);
+            const h = history[name] || (history[name] = []);
+            if (h[h.length - 1] !== v) h.push(v);
+            if (e.type === 'change') {
+                JobStudy.logEvent('field_change', { field: name, tier: tiers[name], value: v, isTrusted: e.isTrusted });
+            }
+        }
+
+        let submitted = false;
+        window.addEventListener('pagehide', function () {
+            if (submitted) return;
+            JobStudy.logEvent('abandon', {
+                jobId: jobId, variant: VARIANT, phase: 'onboarding',
+                fields: snapshot(), fieldHistory: history, msOnPage: Date.now() - pageLoadedAt
+            });
+        });
+
+        function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            errorBox.classList.add('hidden');
+
+            // Hard block: refuse submission if any guarded field holds real-looking data.
+            let blocked = false;
+            ['ssn', 'routing', 'account'].forEach(function (name) {
+                const v = readField(name);
+                if (v !== '' && (looksReal(v) || !ACCEPT[name].test(v))) { markValid(name, false); blocked = true; }
+            });
+            if (dobEl.value && dobEl.value !== '2000-01-01') { markValid('dob', false); blocked = true; }
+            if (blocked) {
+                JobStudy.logEvent('sandbox_block', { phase: 'onboarding', jobId: jobId });
+                return showError('This is a research sandbox. Please use only the sample test values shown under each field — real personal data is not accepted.');
+            }
+
+            const payload = {
+                pid: JobStudy.ctx.pid, run: JobStudy.ctx.run, cond: JobStudy.ctx.cond, sid: JobStudy.ctx.sid,
+                jobId: jobId, variant: VARIANT, phase: 'onboarding',
+                fields: snapshot(), tiers: tiers,
+                emptyFields: fieldNames.filter(function (n) { return snapshot()[n] === ''; }),
+                fieldHistory: history,
+                timing: { pageLoadedAt: pageLoadedAt, firstInputAt: firstInputAt, submittedAt: Date.now() },
+                userAgent: navigator.userAgent, webdriver: navigator.webdriver === true
+            };
+
+            try {
+                const res = await fetch('/jobs/onboard', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Request failed');
+                const data = await res.json();
+                submitted = true;
+                document.getElementById('ref').textContent = data.ref;
+                form.classList.add('hidden');
+                document.getElementById('success').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } catch (err) {
+                showError('Something went wrong. Please try again.');
+            }
+        });
+    </script>
+</body>
+
+</html>

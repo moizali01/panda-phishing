@@ -314,6 +314,12 @@ app.get("/jobs/apply-:variant", function (request, res) {
     res.sendFile(file);
 });
 
+// Phase 2 onboarding (simulated I-9 / W-4 / direct deposit). This is a research
+// sandbox: it accepts sample/test values only, never real personal data.
+app.get("/jobs/onboarding", function (request, res) {
+    res.sendFile(path.join(JOBS_DIR, 'onboarding.html'));
+});
+
 // Store a submitted job application with the run identifiers (pid, run, cond).
 app.post("/jobs/apply", function (req, res) {
     const ref = 'NB-' + crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -329,6 +335,59 @@ app.post("/jobs/apply", function (req, res) {
             return res.status(500).json({ ok: false });
         }
         console.log(`--- JOB APPLICATION ${ref} --- pid=${entry.pid} run=${entry.run} cond=${entry.cond} job=${entry.jobId} variant=${entry.variant}`);
+        res.json({ ok: true, ref });
+    });
+});
+
+// Defense-in-depth scrub for the onboarding sandbox: before anything is written to
+// disk, redact any value in a guarded field that looks like REAL sensitive data
+// (i.e. contains a non-zero digit). The client already blocks these, so under normal
+// use nothing is redacted; this guarantees a real SSN / routing / account number can
+// never be persisted even if the client guard is bypassed.
+const ONBOARD_GUARDED = ['ssn', 'routing', 'account', 'dob'];
+function scrubOnboarding(body) {
+    try {
+        const f = body && body.fields;
+        if (f && typeof f === 'object') {
+            ONBOARD_GUARDED.forEach(function (k) {
+                const v = f[k];
+                if (typeof v === 'string' && v !== '' && /[1-9]/.test(v)) {
+                    f[k] = '[REDACTED:non-sandbox-value]';
+                }
+            });
+        }
+        // The field-change history can also carry typed values; redact there too.
+        const h = body && body.fieldHistory;
+        if (h && typeof h === 'object') {
+            ONBOARD_GUARDED.forEach(function (k) {
+                if (Array.isArray(h[k])) {
+                    h[k] = h[k].map(function (v) {
+                        return (typeof v === 'string' && v !== '' && /[1-9]/.test(v)) ? '[REDACTED:non-sandbox-value]' : v;
+                    });
+                }
+            });
+        }
+    } catch (e) { /* never let scrubbing throw */ }
+    return body;
+}
+
+// Store a simulated onboarding submission. Sandbox only — see scrubOnboarding.
+app.post("/jobs/onboard", function (req, res) {
+    const ref = 'OB-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    const entry = {
+        ...scrubOnboarding(req.body),
+        ref,
+        phase: 'onboarding',
+        sandbox: true,
+        serverReceivedAt: Date.now(),
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    };
+    fs.appendFile(JOB_APPLICATIONS_LOG_FILE, JSON.stringify(entry) + '\n', err => {
+        if (err) {
+            console.error('Failed to write onboarding log:', err.message);
+            return res.status(500).json({ ok: false });
+        }
+        console.log(`--- JOB ONBOARDING ${ref} (sandbox) --- pid=${entry.pid} run=${entry.run} cond=${entry.cond} job=${entry.jobId}`);
         res.json({ ok: true, ref });
     });
 });

@@ -28,24 +28,24 @@ window.JOBS = [
         ]
     },
     {
-        id: 'senior-brand-manager',
-        title: 'Senior Brand Manager',
-        team: 'Brand & Growth',
+        id: 'senior-platform-engineer',
+        title: 'Senior Platform Engineer',
+        team: 'Engineering',
         location: 'Chicago, IL (Onsite)',
         type: 'Full-time',
-        salary: '$120,000 – $145,000',
+        salary: '$135,000 – $165,000',
         posted: '2026-10-28',
         featured: true,
-        summary: 'Own brand strategy and lead a small team. Reserved for senior marketers with a track record of scaling brands.',
+        summary: 'Own the backbone of the Gawalmandi order-and-logistics platform. Reserved for engineers who have run production systems at scale.',
         responsibilities: [
-            'Set brand positioning and annual plan',
-            'Manage a team of 3–4 marketers',
-            'Own the brand budget and agency relationships'
+            'Design and operate core backend services',
+            'Lead on reliability, observability and on-call',
+            'Mentor a small team of engineers'
         ],
         requirements: [
-            '7+ years in brand marketing',
-            'People-management experience',
-            'Portfolio of launched campaigns'
+            '7+ years building production backend systems',
+            'Strong with distributed systems and databases',
+            'Experience leading technical projects'
         ]
     },
     {
@@ -57,11 +57,11 @@ window.JOBS = [
         salary: '$90,000 – $110,000',
         posted: '2026-11-01',
         featured: false,
-        summary: 'Turn marketing and product data into decisions. SQL-first role on a collaborative analytics team.',
+        summary: 'Turn marketplace and logistics data into decisions. SQL-first role on a collaborative analytics team.',
         responsibilities: [
             'Build dashboards and self-serve reporting',
-            'Run analyses on campaign and funnel performance',
-            'Partner with marketing on experiment design'
+            'Run analyses on order, delivery and funnel performance',
+            'Partner with ops on experiment design'
         ],
         requirements: [
             '3+ years in analytics',
@@ -70,22 +70,22 @@ window.JOBS = [
         ]
     },
     {
-        id: 'customer-success-associate',
-        title: 'Customer Success Associate',
-        team: 'Customer',
+        id: 'operations-associate',
+        title: 'Operations Associate',
+        team: 'Operations',
         location: 'Chicago, IL (Hybrid)',
         type: 'Full-time',
         salary: '$55,000 – $65,000',
         posted: '2026-11-03',
         featured: false,
-        summary: 'Be the first point of contact for new customers. Entry-friendly role with a path into account management.',
+        summary: 'Keep the marketplace running day to day — vendor onboarding, order flow and issue resolution. Entry-friendly role with a path into ops management.',
         responsibilities: [
-            'Onboard new accounts',
-            'Answer product questions and triage issues',
-            'Flag churn risks to the account team'
+            'Onboard new vendors and partners',
+            'Monitor order flow and resolve exceptions',
+            'Flag recurring issues to the ops team'
         ],
         requirements: [
-            '1+ year in a customer-facing role',
+            '1+ year in an operations or coordinator role',
             'Excellent communication',
             'Comfort learning new software'
         ]
