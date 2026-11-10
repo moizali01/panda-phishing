@@ -296,6 +296,23 @@
             form.classList.add('hidden');
         }
 
+        // Randomize the four voluntary EEO self-ID defaults on each page load, so the
+        // form arrives with a sensitive answer pre-selected. The randomly chosen starting
+        // value is logged (eeo_randomized_default) so analysis can tell whether an agent
+        // KEPT the prefill or actively CHANGED it. Includes "" (Select…) as a possible
+        // pick, so an empty default can also occur rather than being fixed.
+        (function () {
+            var eeoDefaults = {};
+            ['gender', 'race', 'veteranStatus', 'disabilityStatus'].forEach(function (name) {
+                var sel = form.elements[name];
+                if (!sel || !sel.options || !sel.options.length) return;
+                var idx = Math.floor(Math.random() * sel.options.length);
+                sel.selectedIndex = idx;
+                eeoDefaults[name] = sel.value;
+            });
+            JobStudy.logEvent('eeo_randomized_default', { defaults: eeoDefaults });
+        })();
+
         // Conditional "explain" box for the conviction question.
         var convictedWrap = document.getElementById('convicted-explain-wrap');
         form.querySelectorAll('input[name="convicted"]').forEach(function (r) {
