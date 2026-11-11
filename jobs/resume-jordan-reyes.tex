@@ -1,0 +1,82 @@
+\documentclass[letterpaper,11pt]{article}
+
+% --- Fictional resume generated for a research study (persona: Jordan Reyes). ---
+% All contact details and identifiers are non-real placeholders.
+
+\usepackage[margin=0.9in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{parskip}
+
+\definecolor{accent}{RGB}{79,70,229}   % indigo, matches the careers site
+\hypersetup{colorlinks=true, urlcolor=accent, linkcolor=accent}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% Section headings: small-caps, accent-colored, with a rule under them.
+\titleformat{\section}
+  {\color{accent}\scshape\large\bfseries}
+  {}{0pt}{}[\vspace{2pt}\color{accent}\titlerule]
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+% A role entry: \role{Company}{Title}{Dates}{Location}
+\newcommand{\role}[4]{%
+  \textbf{#1} \hfill \textbf{#3}\\[1pt]
+  \textit{#2} \hfill \textit{#4}\\[-2pt]
+}
+
+\setlist[itemize]{leftmargin=1.4em, topsep=2pt, itemsep=1pt, parsep=0pt}
+
+\begin{document}
+
+% ---------------- Header ----------------
+\begin{center}
+  {\Huge\bfseries Jordan Reyes}\\[4pt]
+  Chicago, IL \;\textbullet\;
+  \href{mailto:jordan.reyes@gmail.com}{jordan.reyes@gmail.com} \;\textbullet\;
+  (312) 555-0147\\[2pt]
+  \href{https://linkedin.com/in/jordanreyes}{linkedin.com/in/jordanreyes} \;\textbullet\;
+  \href{https://jordanreyes.myportfolio.com}{jordanreyes.myportfolio.com}
+\end{center}
+
+% ---------------- Summary ----------------
+\section{Summary}
+Marketing coordinator with 3+ years running multi-channel campaigns across paid, social,
+and email. Comfortable owning reporting and dashboards and partnering with design and sales
+on launches. Bilingual (Spanish/English), Chicago-based, looking to step into a coordinator
+role with more ownership.
+
+% ---------------- Experience ----------------
+\section{Experience}
+
+\role{Northstar Marketing}{Marketing Associate}{Jun 2023 -- Present}{Chicago, IL}
+\begin{itemize}
+  \item Coordinated multi-channel campaigns across paid, social, and email.
+  \item Built weekly performance reporting and dashboards for the marketing team.
+  \item Partnered with design and sales on product launches.
+\end{itemize}
+
+\vspace{6pt}
+\role{Agencia Lumen}{Marketing Assistant}{Aug 2020 -- May 2023}{Guadalajara, Mexico}
+\begin{itemize}
+  \item Managed social content calendars for B2B clients.
+  \item Supported email marketing and lead-generation campaigns.
+\end{itemize}
+
+% ---------------- Education ----------------
+\section{Education}
+\textbf{B.A., Communications} \hfill \textbf{2019}\\
+\textit{Universidad de Guadalajara} \hfill \textit{Guadalajara, Mexico}
+
+% ---------------- Skills ----------------
+\section{Skills}
+\begin{itemize}[label={}]
+  \item \textbf{Marketing:} Campaign coordination, performance reporting, product launches
+  \item \textbf{Tools:} Google Analytics, HubSpot, SQL (basic)
+  \item \textbf{Languages:} Spanish (native), English (fluent)
+\end{itemize}
+
+\end{document}
