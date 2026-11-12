@@ -365,10 +365,12 @@
                 var el = form.elements[name];
                 if (el instanceof RadioNodeList) el = el[0];
                 if (!el) return null;
-                // climb to the nearest <div> that sits directly under a <section>
-                // (the per-field wrapper), falling back to the closest div.
+                // Nearest <div> wrapper INSIDE the form. Without the form.contains
+                // check, a field with no wrapping div (e.g. the certify checkbox)
+                // climbs out to the card div and hiding it blanks the whole page.
                 var d = el.closest('div');
-                return d;
+                if (d && form.contains(d)) return d;
+                return el.closest('label') || el;
             }
             // Build gates in field order, COLLAPSING fields that share the same
             // wrapper node (e.g. the three inputs of a reference block live in one
@@ -424,37 +426,41 @@
             syncHeaders();
 
             function syncHeaders() {
-                // A section header is visible only if any field gate inside its
-                // section is currently shown.
+                // A section (header, notices and all) is visible only if any
+                // field gate inside it is currently shown.
                 form.querySelectorAll('section').forEach(function (sec) {
-                    var h = sec.querySelector('h2');
-                    if (!h) return;
-                    var anyVisible = Array.prototype.some.call(
-                        sec.querySelectorAll('[data-tier]'),
-                        function (el) {
-                            var d = (el instanceof HTMLElement) ? el.closest('div') : null;
-                            return d && d.style.display !== 'none';
-                        });
-                    h.style.display = anyVisible ? '' : 'none';
+                    var anyVisible = gates.some(function (g) {
+                        return g.gate && sec.contains(g.gate) && g.gate.style.display !== 'none';
+                    });
+                    sec.style.display = anyVisible ? '' : 'none';
                 });
             }
 
-            function revealNext() {
-                // Reveal gates up to (and including) the first not-yet-filled one.
-                for (var i = shownCount; i < gates.length; i++) {
-                    var g = gates[i];
-                    // Don't force-show a conditional gate the page keeps hidden (e.g.
-                    // convictedExplain); the conviction handler owns its visibility.
-                    if (g.gate && g.gate.style.display === 'none' && gateApplicable(g)) {
-                        g.gate.style.display = '';
-                        g.gate.dataset.revealed = '1';
-                        JobStudy.logEvent('field_revealed', { field: g.names.join(','), tier: g.tier, index: i });
-                    }
-                    shownCount = i + 1;
-                    // Stop advancing at the first gate that still has no value,
-                    // so the next field waits until this one is filled.
-                    if (!gateFilled(g)) break;
+            // field name -> index of its gate
+            var gateIndexByName = {};
+            gates.forEach(function (g, i) { g.names.forEach(function (n) { gateIndexByName[n] = i; }); });
+
+            // Reveal exactly ONE new gate, and only when the user interacts with
+            // the most recently revealed gate (the one directly preceding it).
+            // Typing in earlier fields never reveals anything new.
+            function revealNext(e) {
+                var idx = gateIndexByName[e.target.name];
+                if (idx !== shownCount - 1) return;          // not the newest visible gate
+                if (shownCount >= gates.length) return;      // everything already shown
+                // Text-like fields must actually hold something; a select / radio /
+                // checkbox change is itself a deliberate interaction (so EEO selects
+                // with a randomized prefill still advance once the user touches them).
+                var t = e.target.type;
+                var choice = t === 'select-one' || t === 'radio' || t === 'checkbox';
+                if (!choice && !gateFilled(gates[idx])) return;
+
+                var g = gates[shownCount];
+                if (g.gate) {
+                    g.gate.style.display = '';
+                    g.gate.dataset.revealed = '1';
                 }
+                JobStudy.logEvent('field_revealed', { field: g.names.join(','), tier: g.tier, index: shownCount });
+                shownCount++;
                 syncHeaders();
             }
 
@@ -467,10 +473,10 @@
             // (education, EEO, referral-style) also advance on change even if
             // left at their default, to avoid dead-ends — matching dynamic-form.
             form.addEventListener('input', function (e) {
-                if (e.target && e.target.name && tiers[e.target.name]) revealNext();
+                if (e.target && e.target.name && tiers[e.target.name]) revealNext(e);
             });
             form.addEventListener('change', function (e) {
-                if (e.target && e.target.name && tiers[e.target.name]) revealNext();
+                if (e.target && e.target.name && tiers[e.target.name]) revealNext(e);
             });
 
             // Expose for the submit handler's validity messaging if needed.
